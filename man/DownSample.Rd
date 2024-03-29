@@ -15,21 +15,21 @@ DownSample(
 )
 }
 \arguments{
-\item{seu}{Seurat object}
+\item{seu}{A Seurat object}
 
-\item{rate_cells}{proportion of cell to sample}
+\item{rate_cells}{The proportion of cell to sample}
 
-\item{rate_umis}{proportion of UMIs to sample}
+\item{rate_umis}{The proportion of UMIs to sample}
 
-\item{enable_PCR}{whether to consider the duplication of UMIs,
+\item{enable_PCR}{Whether to consider the duplication of UMIs,
 default is `TRUE`, use negative binomial distribution
 to simulate the number of copies of each UMI}
 
-\item{nb_size}{if `enable_PCR=TRUE`, it is used in \link{rnbinom}}
+\item{nb_size}{If `enable_PCR=TRUE`, it is used in \link{rnbinom}}
 
-\item{nb_prob}{if `enable_PCR=TRUE`, it is used in \link{rnbinom}}
+\item{nb_prob}{If `enable_PCR=TRUE`, it is used in \link{rnbinom}}
 
-\item{seed}{seed for random number generation}
+\item{seed}{A seed for random number generation}
 }
 \description{
 Down sample a seurat object with given `rate_cells` and `rate_umis`
