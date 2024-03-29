@@ -2,9 +2,13 @@
 
 export(ConditionalShannonEntropy)
 export(DownSample)
+export(FindPseudotime)
 export(FixedNumClusters)
 export(JaccardIndex)
 export(MarkerGeneFilter)
 export(PPV)
+export(RootNodeSelect)
 import(Seurat)
 import(dplyr)
+import(igraph)
+import(monocle3)

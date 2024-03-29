@@ -80,3 +80,26 @@ DownSample <- function(
 }
 
 
+#' Prepare a Downsample
+#'
+#' Prepare a downsample for the comparison
+#'
+#'
+
+DownSamplePrep <- function(
+  seu,
+  n_clusters,
+  condition = NA,
+  root_cells = NA,
+  ...
+){
+
+
+
+}
+
+
+
+
+
+
