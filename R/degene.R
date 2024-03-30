@@ -1,7 +1,14 @@
+#' @importFrom magrittr %>%
+#' @export
+magrittr::`%>%`
+
 #' Find Markers By Condition
 #'
 #' Find Differential Expressed(DE) markers by Condition
-#' @import dplyr Seurat
+#' @importFrom magrittr %>%
+#' @importFrom Seurat FindMarkers
+#' @importFrom dplyr mutate
+#' @importFrom tibble rownames_to_column
 #' @param seu A Seurat object
 #' @param condition A character name in the `meta.data` of `seu`
 #' @param ... The argument could pass to \code{\link{FindMarkers}}
@@ -22,14 +29,14 @@ FindAllMarkersByCondition <- function(
 
   for (iter in 1:nlevels(seu$seurat_clusters)) {
     if (temp_qualifer[iter]) {
-      markers_by_condition[[k]] <- FindMarkers(seu,
+      markers_by_condition[[k]] <- Seurat::FindMarkers(seu,
                                                ident.1 = seu@meta.data[, condition][1],
                                                group.by = condition,
                                                subset.ident = levels(seu$seurat_clusters)[iter],
                                                ...
       ) %>%
-        mutate(cluster = iter) %>%
-        rownames_to_column(var = "gene")
+        dplyr::mutate(cluster = iter) %>%
+        tibble::rownames_to_column(var = "gene")
     }
     k <- k + 1
   }
@@ -42,6 +49,8 @@ FindAllMarkersByCondition <- function(
 #'
 #' Filter the maker genes with series of filters
 #'
+#' @importFrom magrittr %>%
+#' @importFrom dplyr filter group_by arrange pull
 #' @param df_MarkerGene a `data.fram` generated from `FindMarkers`
 #' @param pct_1 A minimum cutoff for `pct.1`
 #' @param pct_2 A minimum cutoff for `pct.2`

@@ -6,6 +6,7 @@
 \usage{
 FindPseudotime(
   seu,
+  interactive = FALSE,
   root_cells_ref = NA,
   min_branch_len = 10,
   redo_sctransform = FALSE

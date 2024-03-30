@@ -7,11 +7,11 @@
 FixedNumClusters(seu, n_clusters, verbose = FALSE)
 }
 \arguments{
-\item{seu}{a Seurat object}
+\item{seu}{A \code{Seurat} object}
 
-\item{n_clusters}{scalar, the desired number of clusters}
+\item{n_clusters}{A scalar, the desired number of clusters}
 
-\item{verbose}{default is \code{\link{FALSE}}}
+\item{verbose}{Default is \code{\link{FALSE}}}
 }
 \description{
 Customize the number of cluster in the Seurat object

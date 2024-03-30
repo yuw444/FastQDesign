@@ -1,7 +1,8 @@
 #' Root Node Selection for \code{cell_data_set}
 #'
 #' Select the root node for \code{cell_data_set} based on the given \code{root_cells_ref}
-#' @import monocle3 igraph
+#' @importFrom monocle3 principal_graph
+#' @importFrom igraph degree
 #' @param cds A \code{cell_data_set} object from \code{monocle3}
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @return A character, rootnode id
@@ -42,7 +43,8 @@ RootNodeSelect <- function(cds,
 #'
 #' Find the pseudotime of a \code{Seurat} object based on its \code{UMAP}.
 #'
-#' @import monocle3 Seurat
+#' @importFrom monocle3 cluster_cells learn_graph order_cells
+#' @importFrom Seurat SCTransform RunPCA RunUMAP as.CellDataSet
 #' @param seu A \code{Seurat} object
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @param min_branch_len The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}
@@ -51,13 +53,10 @@ RootNodeSelect <- function(cds,
 #' @export
 #'
 FindPseudotime <- function(seu,
+                           interactive = FALSE,
                            root_cells_ref = NA,
                            min_branch_len = 10,
                            redo_sctransform = FALSE) {
-  require(monocle3)
-  require(SeuratWrappers)
-  require(tibble)
-
   if (redo_sctransform) {
     seu <- Seurat::SCTransform(seu, verbose = TRUE)
     seu <- Seurat::RunPCA(seu, verbose = TRUE)
@@ -67,26 +66,31 @@ FindPseudotime <- function(seu,
                       dims = 1:30,
                       verbose = FALSE)
   }
-  cds <- Seurat::as.CellDataSet(seu)
-
-  cds <-
-    monocle3::cluster_cells(cds = cds, reduction_method = "UMAP")
+  suppressWarnings({
+    cds <- SeuratWrappers::as.cell_data_set(seu)
+    cds <-
+      monocle3::cluster_cells(cds = cds, reduction_method = "UMAP")
+  })
   cds <- monocle3::learn_graph(
     cds,
     use_partition = FALSE,
-    learn_graph_control = list(minimal_branch_len = min_branch_lens)
+    learn_graph_control = list(minimal_branch_len = min_branch_len)
   )
 
   cell_closet_vertex <-
     cds@principal_graph_aux@listData[["UMAP"]][["pr_graph_cell_proj_closest_vertex"]]
 
-  root_nodes <- RootNodeSelect(cds, root_cells_ref)
-
-  cds <- monocle3::order_cells(cds,
-                               root_pr_nodes = paste0("Y_", root_nodes))
-
+  if (interactive) {
+    cds <- monocle3::order_cells(cds)
+    root_nodes <- cds@principal_graph_aux[["UMAP"]]$root_pr_nodes
+  } else{
+    root_nodes <- RootNodeSelect(cds, root_cells_ref)
+    cds <- monocle3::order_cells(cds,
+                                 root_pr_nodes = paste0("Y_", root_nodes))
+  }
   cds$cell_closet_vertex <- cell_closet_vertex
-  cds$root_cells_ref <- as.factor(cell_closet_vertex == root_nodes)
+  cds$root_cells_ref <-
+    as.factor(paste("Y_", cell_closet_vertex, sep = "") == root_nodes)
   cds$pseudotime <-
     cds@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]
 

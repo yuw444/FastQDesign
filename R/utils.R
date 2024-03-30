@@ -83,7 +83,6 @@ ConditionalShannonEntropy <- function(condition, feature) {
   return(out)
 }
 
-
 CalculatePowerIndexes <- function(ListReference,
                                   ListDownsample,
                                   ...) {

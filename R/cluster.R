@@ -2,9 +2,9 @@
 #'
 #' Customize the number of cluster in the Seurat object
 #'
-#' @param seu a Seurat object
-#' @param n_clusters scalar, the desired number of clusters
-#' @param verbose default is \code{\link{FALSE}}
+#' @param seu A \code{Seurat} object
+#' @param n_clusters A scalar, the desired number of clusters
+#' @param verbose Default is \code{\link{FALSE}}
 #'
 #' @export
 
