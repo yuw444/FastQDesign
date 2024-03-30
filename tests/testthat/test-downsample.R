@@ -21,7 +21,7 @@ test_that("sample prep", {
     n_clusters = 4,
     condition = "orig.ident",
     cell_3d_embedding = TRUE,
-    root_cells_ref = Cells(cb03_list[[1]])[colData(cb03_list[[1]])$root_cells],
+    root_cells_ref = Cells(cb03_list[[1]])[cb03_list[[1]]$root_cells],
     min.pct = 0.2,
     logfc.threshold = 0.3,
     return.thresh = 0.05,
