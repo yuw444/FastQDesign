@@ -92,7 +92,7 @@ FindPseudotime <- function(seu,
                                  root_pr_nodes = paste0("Y_", root_nodes))
   }
   cds$cell_closet_vertex <- cell_closet_vertex
-  cds$root_cells_ref <-
+  cds$root_cells <-
     as.factor(paste("Y_", cell_closet_vertex, sep = "") == root_nodes)
   cds$pseudotime <-
     cds@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]

@@ -12,6 +12,7 @@ test_that("interactive", {
   cb03_list <- readRDS("~/Documents/Research/FastQDesign/reference_list.rds")
 
   cb03_cds <- FindPseudotime(cb03_list[[1]], interactive = TRUE, use_partition = TRUE)
+
   plot_cells(cb03_cds, color_cells_by = "pseudotime")
 
 })

@@ -74,7 +74,8 @@ MarkerGeneFilter <- function(df_MarkerGene,
                (`pct.1` > pct_1 | `pct.2` > pct_2)) %>%
       dplyr::group_by(`gene`) %>%
       dplyr::arrange(`p_val_adj`) %>%
-      dplyr::filter(row_number() == 1) %>%
+      dplyr::slice_head() %>%
+      dplyr::ungroup() %>%
       dplyr::pull(`gene`)
 
     return(geneList)

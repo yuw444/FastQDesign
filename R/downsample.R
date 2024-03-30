@@ -96,6 +96,7 @@ DownSample <- function(seu,
 #' @importFrom Seurat SCTransform RunPCA RunUMAP FindNeighbors FindAllMarkers
 #' @import glmGamPoi
 #' @importFrom monocle3 pseudotime
+#' @importFrom SummarizedExperiment colData
 #' @param seu A \code{Seurat} object
 #' @param n_clusters A scalar, the desired number of clusters
 #' @param condition A character, the condition colname in \code{Seurat@meta.data}
@@ -108,16 +109,19 @@ SamplePrep <- function(seu,
                        pca_used = 1:30,
                        interactive = FALSE,
                        root_cells_ref = NA,
+                       verbose = FALSE,
                        ...) {
   if (!is.na(n_clusters))
   {
+    c("###When n_cluster is specified, SCTransform is applied automatically!\n")
     seu <- Seurat::SCTransform(object = seu,
                                method = "glmGamPoi",
-                               verbose = FALSE)
-    seu <- Seurat::RunPCA(seu, verbose = FALSE)
-    seu <- Seurat::FindNeighbors(seu, verbose = FALSE)
-    seu <- Seurat::FixedNumClusters(seu, n_clusters)
-    seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = FALSE)
+                               verbose = verbose)
+    seu <- Seurat::RunPCA(seu, verbose = verbose)
+    seu <- Seurat::FindNeighbors(seu, verbose = verbose)
+    cat("###Finding the desired number of clusters ...\n")
+    seu <- FixedNumClusters(seu, n_clusters)
+    seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = verbose)
   }
 
   cat("\n### Finding all cluster markers ....\n")
@@ -134,7 +138,7 @@ SamplePrep <- function(seu,
 
   seu$pseudotime <- NA
 
-  if (!is.na(root_cells_ref) | interactive) {
+  if (!is.na(root_cells_ref[1]) | interactive) {
     cat("\n### Finding the pseudotime ....\n")
     temp_cds <- FindPseudotime(
       seu,
@@ -144,6 +148,7 @@ SamplePrep <- function(seu,
       redo_sctransform = FALSE
     )
     seu$pseudotime <- monocle3::pseudotime(temp_cds)
+    seu$root_cells <- SummarizedExperiment::colData(temp_cds)$root_cells
   }
 
   seu$umap_1 <- seu$umap_2 <- seu$umap_3 <- NA

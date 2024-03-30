@@ -12,6 +12,7 @@ SamplePrep(
   pca_used = 1:30,
   interactive = FALSE,
   root_cells_ref = NA,
+  verbose = FALSE,
   ...
 )
 }
