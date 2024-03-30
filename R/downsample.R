@@ -182,7 +182,13 @@ SamplePrep <- function(seu,
 #' differential expressed genes by cluster and condition, pseudotime,
 #' cell lower dimension embedding
 #'
+#' @importFrom magrittr %>%
+#' @param reference_list The list structure same with \code{SamplePrep} returns
+#' @param downsample_list The list structure same with \code{SamplePrep} returns
+#' @param ... Parameters that pass to \code{MarkerGeneFilter}
 #'
+#' @return List of matched features
+#' @export
 SampleMatch <- function(reference_list,
                         downsample_list,
                         ...) {
@@ -229,3 +235,5 @@ SampleMatch <- function(reference_list,
     )
   )
 }
+
+

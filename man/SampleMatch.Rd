@@ -6,6 +6,16 @@
 \usage{
 SampleMatch(reference_list, downsample_list, ...)
 }
+\arguments{
+\item{reference_list}{The list structure same with \code{SamplePrep} returns}
+
+\item{downsample_list}{The list structure same with \code{SamplePrep} returns}
+
+\item{...}{Parameters that pass to \code{MarkerGeneFilter}}
+}
+\value{
+List of matched features
+}
 \description{
 Match the features of downsample to the reference, cluster membership,
 differential expressed genes by cluster and condition, pseudotime,

@@ -5,7 +5,7 @@ test_that("interactive", {
 
   bam_ds <- readRDS("~/Documents/Research/FastQDesign/bam_downsample_list.rds")[[1]]
 
-  temp <- FindPseudotime(bam_ds, interactive = TRUE)
+  temp <- FindPseudotime(bam_ds, root_cells_ref = Cells(cb03_list[[1]])[cb03_list[[1]]$root_cells])
 
   temp <- FindPseudotime(bam_ds)
 

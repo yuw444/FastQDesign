@@ -31,11 +31,12 @@ RootNodeSelect <- function(cds,
     return(candidate_root_1[1])
   }
 
-  candidate_root_2 <-
-    names(which.max(table(cell_closet_vertex[cell_closet_vertex %in% leaf_node])))
   warning(
     "None of provided 'root_cells_ref' is in the leaf node, choose the biggest leaf node as the root node!"
   )
+
+  candidate_root_2 <-
+    names(which.max(table(cell_closet_vertex[cell_closet_vertex %in% leaf_node])))
   return(candidate_root_2[1])
 }
 
@@ -93,7 +94,7 @@ FindPseudotime <- function(seu,
   }
   cds$cell_closet_vertex <- cell_closet_vertex
   cds$root_cells <-
-    as.factor(paste("Y_", cell_closet_vertex, sep = "") == root_nodes)
+    paste("Y_", cell_closet_vertex, sep = "") == root_nodes
   cds$pseudotime <-
     cds@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]
 
