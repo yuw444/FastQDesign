@@ -149,20 +149,22 @@ FastQDesign <- function(df_power,
   type_values <- c("power" = 8, "cost" = 9)
 
   p_design_ind <- ggplot2::ggplot(df_flow,
-                         aes(N, R)) +
+                         ggplot2::aes(N, R)) +
     ggplot2::geom_point(shape = 21,
                size = 3,
-               aes(color = flow_cell, fill = power)) +
+               ggplot2::aes(color = flow_cell, fill = power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
+      breaks = seq(0,1,length.out = 6),
+      limits = c(0,1),
       values = c(0, 1),
       name = "Power"
     ) +
     purrr::map2(
       curves_flow_shared,
       c(converted_capacities, "Budget"),
-      ~ stat_function(fun = .x,
-                      aes(color = .y))
+      ~ ggplot2::stat_function(fun = .x,
+                      ggplot2::aes(color = .y))
     ) +
     ggplot2::scale_color_manual(
       values = colors_ind,
@@ -181,7 +183,7 @@ FastQDesign <- function(df_power,
          y = "Target reads per cell") +
     ggplot2::geom_point(
       data = ind_optimal[!is.na(ind_optimal$N),],
-      aes(N, R, shape = type),
+      ggplot2::aes(N, R, shape = type),
       size = 4,
       color = "purple"
     ) +
@@ -190,15 +192,17 @@ FastQDesign <- function(df_power,
     ggplot2::theme_bw()
 
   p_power_cost_ind <- ggplot2::ggplot(df_flow,
-                             aes(cost, power)) +
+                             ggplot2::aes(cost, power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
+      breaks = seq(0,1,length.out = 6),
+      limits = c(0,1),
       values = c(0, 1),
       name = "Power"
     ) +
     ggplot2::geom_point(shape = 21,
                size = 3,
-               aes(color = flow_cell, fill = power)) +
+               ggplot2::aes(color = flow_cell, fill = power)) +
     ggplot2::scale_color_manual(
       values = colors_ind,
       breaks = c(converted_capacities, "Budget"),
@@ -222,7 +226,7 @@ FastQDesign <- function(df_power,
     ) +
     ggplot2::geom_point(
       data = ind_optimal[!is.na(ind_optimal$N),],
-      aes(cost, power, shape = type),
+      ggplot2::aes(cost, power, shape = type),
       size = 4,
       color = "purple"
     ) +
@@ -278,10 +282,12 @@ FastQDesign <- function(df_power,
                            share_optimal_cost)
 
     p_design_share <- ggplot2::ggplot(df_power_shared,
-                             aes(N, R)) +
-      ggplot2::geom_point(shape = 21, size = 3, aes(fill = power)) +
+                             ggplot2::aes(N, R)) +
+      ggplot2::geom_point(shape = 21, size = 3, ggplot2::aes(fill = power)) +
       ggplot2::scale_fill_gradientn(
         colors = c("white", "red"),
+        breaks = seq(0,1,length.out = 6),
+        limits = c(0,1),
         values = c(0, 1),
         name = "Power"
       ) +
@@ -296,8 +302,8 @@ FastQDesign <- function(df_power,
       purrr::map2(
         curves_flow_shared,
         c(converted_capacities, "Budget"),
-        ~ stat_function(fun = .x,
-                        aes(color = .y))
+        ~ ggplot2::stat_function(fun = .x,
+                        ggplot2::aes(color = .y))
       ) +
       ggplot2::scale_color_manual(
         values = colors_ind,
@@ -306,7 +312,7 @@ FastQDesign <- function(df_power,
       ) +
       ggplot2::geom_point(
         data = share_optimal,
-        aes(N, R, shape = type),
+        ggplot2::aes(N, R, shape = type),
         size = 4,
         color = "purple"
       ) +
@@ -318,13 +324,15 @@ FastQDesign <- function(df_power,
       ggplot2::theme_bw()
 
     p_power_cost_share <- ggplot2::ggplot(df_power_shared,
-                                 aes(cost, power, fill = power)) +
+                                 ggplot2::aes(cost, power, fill = power)) +
       ggplot2::scale_fill_gradientn(
         colors = c("white", "red"),
+        breaks = seq(0,1,length.out = 6),
+        limits = c(0,1),
         values = c(0, 1),
         name = "Power"
       ) +
-      ggplot2::geom_point(shape = 21, size = 3, aes(color = flow_cell)) +
+      ggplot2::geom_point(shape = 21, size = 3, ggplot2::aes(color = flow_cell)) +
       ggplot2::labs(x = "Cost",
            y = "Power") +
       ggplot2::scale_color_manual(
@@ -348,7 +356,7 @@ FastQDesign <- function(df_power,
       ) +
       ggplot2::geom_point(
         data = share_optimal,
-        aes(cost, power, shape = type),
+        ggplot2::aes(cost, power, shape = type),
         size = 4,
         color = "purple"
       ) +
