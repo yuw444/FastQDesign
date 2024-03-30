@@ -46,6 +46,8 @@ RootNodeSelect <- function(cds,
 #' @importFrom monocle3 cluster_cells learn_graph order_cells
 #' @importFrom Seurat SCTransform RunPCA RunUMAP as.CellDataSet
 #' @param seu A \code{Seurat} object
+#' @param interactive Whether to choose the root node interactively
+#' @param use_partition Whether to \code{use_partition} when \code{learn_graph}
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @param min_branch_len The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}
 #' @param redo_sctransform Whether to redo the \code{Seurat::SCTransform}
@@ -54,6 +56,7 @@ RootNodeSelect <- function(cds,
 #'
 FindPseudotime <- function(seu,
                            interactive = FALSE,
+                           use_partition = FALSE,
                            root_cells_ref = NA,
                            min_branch_len = 10,
                            redo_sctransform = FALSE) {
@@ -73,7 +76,7 @@ FindPseudotime <- function(seu,
   })
   cds <- monocle3::learn_graph(
     cds,
-    use_partition = FALSE,
+    use_partition = use_partition,
     learn_graph_control = list(minimal_branch_len = min_branch_len)
   )
 

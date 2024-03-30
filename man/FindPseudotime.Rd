@@ -7,6 +7,7 @@
 FindPseudotime(
   seu,
   interactive = FALSE,
+  use_partition = FALSE,
   root_cells_ref = NA,
   min_branch_len = 10,
   redo_sctransform = FALSE
@@ -14,6 +15,10 @@ FindPseudotime(
 }
 \arguments{
 \item{seu}{A \code{Seurat} object}
+
+\item{interactive}{Whether to choose the root node interactively}
+
+\item{use_partition}{Whether to \code{use_partition} when \code{learn_graph}}
 
 \item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
 
