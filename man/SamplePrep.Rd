@@ -25,6 +25,12 @@ SamplePrep(
 
 \item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
 }
+\value{
+list Seurat with extra meta.data features,
+ data.frames of DE genes by cluster and condition
+
+ @export
+}
 \description{
 Prepare a sample for the comparison
 }

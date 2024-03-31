@@ -101,7 +101,10 @@ DownSample <- function(seu,
 #' @param n_clusters A scalar, the desired number of clusters
 #' @param condition A character, the condition colname in \code{Seurat@meta.data}
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
-
+#' @return list Seurat with extra meta.data features,
+#'  data.frames of DE genes by cluster and condition
+#'
+#'  @export
 SamplePrep <- function(seu,
                        n_clusters = NA,
                        condition = NA,
