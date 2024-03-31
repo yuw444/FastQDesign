@@ -82,3 +82,25 @@ ConditionalShannonEntropy <- function(condition, feature) {
 
   return(out)
 }
+
+
+#' Extract metadata from mtx.gz file
+#'
+#'
+#'
+ExtractMTX <- function(file_path){
+
+  metadata_lines <- readLines(file_path, n = 20)
+  metadata_lines[5] <- paste0(metadata_lines[5], ",", sep="")
+  metadata_lines[6] <- "\t\"parent_bam\": \"/scratch/g/chlin/Yu/AIBM/sub/AI/outs/possorted_genome_bam.bam\","
+
+  # Extract metadata lines containing '%metadata_json'
+  metadata_json_lines <- gsub("^%", "", metadata_json_lines)
+  metadata_json <- paste(metadata_json, collapse = "")
+  metadata_json <- regmatches(metadata_json, regexpr("\\{.*\\}", metadata_json))
+
+  # Convert JSON string to a list
+  metadata_list <- jsonlite::fromJSON(metadata_json)
+
+  return(metadata_list)
+}
