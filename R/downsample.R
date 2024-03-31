@@ -122,7 +122,7 @@ SamplePrep <- function(seu,
                                method = "glmGamPoi",
                                verbose = verbose)
     seu <- Seurat::RunPCA(seu, verbose = verbose)
-    seu <- Seurat::FindNeighbors(seu, verbose = verbose)
+    seu <- Seurat::FindNeighbors(seu, dims = pca_used, verbose = verbose)
     cat("###Finding the desired number of clusters ...\n")
     seu <- FixedNumClusters(seu, n_clusters)
     seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = verbose)
