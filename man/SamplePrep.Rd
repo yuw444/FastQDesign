@@ -28,8 +28,6 @@ SamplePrep(
 \value{
 list Seurat with extra meta.data features,
  data.frames of DE genes by cluster and condition
-
- @export
 }
 \description{
 Prepare a sample for the comparison

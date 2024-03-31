@@ -104,7 +104,8 @@ DownSample <- function(seu,
 #' @return list Seurat with extra meta.data features,
 #'  data.frames of DE genes by cluster and condition
 #'
-#'  @export
+#' @export
+#'
 SamplePrep <- function(seu,
                        n_clusters = NA,
                        condition = NA,
