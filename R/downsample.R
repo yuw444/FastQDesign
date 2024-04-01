@@ -117,7 +117,7 @@ SamplePrep <- function(seu,
                        ...) {
   if (!is.na(n_clusters))
   {
-    c("###When n_cluster is specified, SCTransform is applied automatically!\n")
+    cat("###When n_cluster is specified, SCTransform is applied automatically!\n")
     seu <- Seurat::SCTransform(object = seu,
                                method = "glmGamPoi",
                                verbose = verbose)
