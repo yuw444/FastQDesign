@@ -89,8 +89,9 @@ FindPseudotime <- function(seu,
     root_nodes <- cds@principal_graph_aux[["UMAP"]]$root_pr_nodes
   } else{
     root_nodes <- RootNodeSelect(cds, root_cells_ref)
+    root_nodes <- paste0("Y_", root_nodes)
     cds <- monocle3::order_cells(cds,
-                                 root_pr_nodes = paste0("Y_", root_nodes))
+                                 root_pr_nodes = root_nodes)
   }
   cds$cell_closet_vertex <- cell_closet_vertex
   cds$root_cells <-
