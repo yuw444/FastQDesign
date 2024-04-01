@@ -131,7 +131,7 @@ SamplePrep <- function(seu,
   cat("\n### Finding all cluster markers ....\n")
   df_marker_cluster <- Seurat::FindAllMarkers(seu, ...)
 
-  df_marker_condition <- NA
+  df_marker_condition <- NULL
 
   if (!is.na(condition)) {
     cat("\n### Finding all condition markers ....\n")
