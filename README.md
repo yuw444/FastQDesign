@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 
 # FastQDesign
 
@@ -10,7 +15,7 @@ The goal of FastQDesign is to ...
 
 You can install the development version of FastQDesign from [GitHub](https://github.com/) with:
 
-``` r
+```
 # install.packages("devtools")
 devtools::install_github("yuw444/FastQDesign")
 ```

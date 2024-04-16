@@ -3,6 +3,12 @@ test_that("sample prep", {
 
   ref_list <- readRDS("~/Documents/Research/FastQDesign/reference_list.rds")
 
+  ds <- DownSample(
+    ref_list[[1]],
+    rate_cells = 0.1,
+    enable_PCR = TRUE
+  )
+
   cb03_list <- SamplePrep(
     ref_list[[1]],
     condition = "orig.ident",

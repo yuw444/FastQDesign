@@ -3,6 +3,7 @@
 #' Down sample a seurat object with given `rate_cells` and `rate_umis`
 #'
 #' @importFrom Seurat DefaultAssay
+#' @importFrom Matrix colSums
 #' @param seu A Seurat object
 #' @param rate_cells The proportion of cell to sample
 #' @param rate_umis The proportion of UMIs to sample
@@ -80,7 +81,7 @@ DownSample <- function(seu,
     seu_down <- temp
     seu_down@assays[["RNA"]]@counts <-
       as(as.matrix(temp@assays[["RNA"]]@counts), "dgCMatrix")
-    seu_down$nCount_RNA <- colSums(seu_down@assays[["RNA"]]@counts)
+    seu_down$nCount_RNA <- Matrix::colSums(seu_down@assays[["RNA"]]@counts)
     seu_down$nFeature_RNA <- diff(seu_down@assays[["RNA"]]@counts@p)
     Seurat::DefaultAssay(seu_down) <- "RNA"
   }
