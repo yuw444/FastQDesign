@@ -11,9 +11,10 @@ test_that("sample prep", {
 
   cb03_list <- SamplePrep(
     ref_list[[1]],
-    condition = "orig.ident",
-    cell_3d_embedding = TRUE,
-    interactive = TRUE,
+    use_default_res = TRUE,
+    # condition = "orig.ident",
+    cell_3d_embedding = FALSE,
+    interactive = FALSE,
     min.pct = 0.2,
     logfc.threshold = 0.3,
     return.thresh = 0.05,

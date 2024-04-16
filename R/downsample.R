@@ -94,7 +94,7 @@ DownSample <- function(seu,
 #'
 #' Prepare a sample for the comparison
 #'
-#' @importFrom Seurat SCTransform RunPCA RunUMAP FindNeighbors FindAllMarkers
+#' @importFrom Seurat SCTransform RunPCA RunUMAP FindNeighbors FindAllMarkers FindClusters
 #' @import glmGamPoi
 #' @importFrom monocle3 pseudotime
 #' @importFrom SummarizedExperiment colData
@@ -108,7 +108,9 @@ DownSample <- function(seu,
 #' @export
 #'
 SamplePrep <- function(seu,
+                       cluster_id = NA,
                        n_clusters = NA,
+                       use_default_res = FALSE,
                        condition = NA,
                        cell_3d_embedding = FALSE,
                        pca_used = 1:30,
@@ -116,20 +118,39 @@ SamplePrep <- function(seu,
                        root_cells_ref = NA,
                        verbose = FALSE,
                        ...) {
-  if (!is.na(n_clusters))
+
+  if(!is.na(cluster_id) & (!is.na(n_clusters) | use_default_res))
   {
-    cat("###When n_cluster is specified, SCTransform is applied automatically!\n")
+    warning("only applied `cluster_id`, and ignored `n_clusters` and `use_default_res.`\n")
+    n_clusters <- NA
+    use_default_res <- FALSE
+  }
+
+  if (!is.na(n_clusters) | use_default_res)
+  {
+    cat("\n###When n_cluster is specified, SCTransform is applied automatically!\n")
     seu <- Seurat::SCTransform(object = seu,
                                method = "glmGamPoi",
                                verbose = verbose)
     seu <- Seurat::RunPCA(seu, verbose = verbose)
     seu <- Seurat::FindNeighbors(seu, dims = pca_used, verbose = verbose)
-    cat("###Finding the desired number of clusters ...\n")
-    seu <- FixedNumClusters(seu, n_clusters)
+    if (!is.na(n_clusters))
+    {
+      if(use_default_res){
+        warning("Ignored `use_default_res.`\n")
+      }
+      cat("\n###Finding the desired number of clusters ...\n")
+      seu <- FixedNumClusters(seu, n_clusters)
+    } else {
+      seu <- Seurat::FindClusters(seu)
+    }
     seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = verbose)
   }
 
   cat("\n### Finding all cluster markers ....\n")
+  if(!is.na(cluster_id))
+    Idents(seu) <- cluster_id
+
   df_marker_cluster <- Seurat::FindAllMarkers(seu, ...)
 
   df_marker_condition <- NULL

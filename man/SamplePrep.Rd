@@ -6,7 +6,9 @@
 \usage{
 SamplePrep(
   seu,
+  cluster_id = NA,
   n_clusters = NA,
+  use_default_res = FALSE,
   condition = NA,
   cell_3d_embedding = FALSE,
   pca_used = 1:30,
