@@ -99,8 +99,13 @@ DownSample <- function(seu,
 #' @importFrom monocle3 pseudotime
 #' @importFrom SummarizedExperiment colData
 #' @param seu A \code{Seurat} object
+#' @param cluster_id A A character, the condition colname in \code{Seurat@meta.data}
 #' @param n_clusters A scalar, the desired number of clusters
+#' @param use_default_res Whether to use the default resolution in \code{Seurat::FindClusters}
 #' @param condition A character, the condition colname in \code{Seurat@meta.data}
+#' @param cell_3d_embedding Calculate 3d embedding for the input \code{seu}
+#' @param pca_used Used in \code{Seurat::FindNeighbors} and \code{Seurat::RunUMAP}
+#' @param vars_to_regress A character string, used in \code{Seurat::SCTransform}
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @return list Seurat with extra meta.data features,
 #'  data.frames of DE genes by cluster and condition
@@ -110,10 +115,11 @@ DownSample <- function(seu,
 SamplePrep <- function(seu,
                        cluster_id = NA,
                        n_clusters = NA,
-                       use_default_res = FALSE,
+                       use_default_res = TRUE,
                        condition = NA,
                        cell_3d_embedding = FALSE,
                        pca_used = 1:30,
+                       vars_to_regress = NULL,
                        interactive = FALSE,
                        root_cells_ref = NA,
                        verbose = FALSE,
@@ -131,6 +137,7 @@ SamplePrep <- function(seu,
     cat("\n###When n_cluster is specified, SCTransform is applied automatically!\n")
     seu <- Seurat::SCTransform(object = seu,
                                method = "glmGamPoi",
+                               vars.to.regress = vars_to_regress,
                                verbose = verbose)
     seu <- Seurat::RunPCA(seu, verbose = verbose)
     seu <- Seurat::FindNeighbors(seu, dims = pca_used, verbose = verbose)

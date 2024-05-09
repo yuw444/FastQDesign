@@ -8,10 +8,11 @@ SamplePrep(
   seu,
   cluster_id = NA,
   n_clusters = NA,
-  use_default_res = FALSE,
+  use_default_res = TRUE,
   condition = NA,
   cell_3d_embedding = FALSE,
   pca_used = 1:30,
+  vars_to_regress = NULL,
   interactive = FALSE,
   root_cells_ref = NA,
   verbose = FALSE,
@@ -21,9 +22,19 @@ SamplePrep(
 \arguments{
 \item{seu}{A \code{Seurat} object}
 
+\item{cluster_id}{A A character, the condition colname in \code{Seurat@meta.data}}
+
 \item{n_clusters}{A scalar, the desired number of clusters}
 
+\item{use_default_res}{Whether to use the default resolution in \code{Seurat::FindClusters}}
+
 \item{condition}{A character, the condition colname in \code{Seurat@meta.data}}
+
+\item{cell_3d_embedding}{Calculate 3d embedding for the input \code{seu}}
+
+\item{pca_used}{Used in \code{Seurat::FindNeighbors} and \code{Seurat::RunUMAP}}
+
+\item{vars_to_regress}{A character string, used in \code{Seurat::SCTransform}}
 
 \item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
 }
