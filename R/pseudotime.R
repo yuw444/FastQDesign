@@ -47,22 +47,24 @@ RootNodeSelect <- function(cds,
 #' @importFrom monocle3 cluster_cells learn_graph order_cells
 #' @importFrom Seurat SCTransform RunPCA RunUMAP as.CellDataSet
 #' @param seu A \code{Seurat} object
-#' @param interactive Whether to choose the root node interactively
-#' @param use_partition Whether to \code{use_partition} when \code{learn_graph}
-#' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
-#' @param min_branch_len The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}
 #' @param redo_sctransform Whether to redo the \code{Seurat::SCTransform}
 #' @param vars_to_regress A character string, used in \code{Seurat::SCTransform}
+#' @param use_partition Whether to \code{use_partition} when \code{monocle3::learn_graph}
+#' @param close_loop Logic, a parameter in \code{monocle3::learn_graph}
+#' @param learn_graph_control List, a parameter in \code{monocle3::learn_graph}
+#' @param interactive Whether to choose the root node interactively
+#' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @return A \code{cell_data_set} object with pseudotime as feature
 #' @export
 #'
 FindPseudotime <- function(seu,
-                           interactive = FALSE,
-                           use_partition = FALSE,
-                           root_cells_ref = NA,
-                           min_branch_len = 10,
                            redo_sctransform = FALSE,
-                           vars_to_regress = NULL) {
+                           vars_to_regress = NULL,
+                           use_partition = FALSE,
+                           close_loop = FALSE,
+                           learn_graph_control = NULL,
+                           interactive = FALSE,
+                           root_cells_ref = NA) {
   if (redo_sctransform) {
     seu <- Seurat::SCTransform(
       seu,
@@ -85,7 +87,8 @@ FindPseudotime <- function(seu,
   cds <- monocle3::learn_graph(
     cds,
     use_partition = use_partition,
-    learn_graph_control = list(minimal_branch_len = min_branch_len)
+    close_loop = close_loop,
+    learn_graph_control = learn_graph_control
   )
 
   cell_closet_vertex <-

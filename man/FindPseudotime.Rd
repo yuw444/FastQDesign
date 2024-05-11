@@ -6,28 +6,31 @@
 \usage{
 FindPseudotime(
   seu,
-  interactive = FALSE,
-  use_partition = FALSE,
-  root_cells_ref = NA,
-  min_branch_len = 10,
   redo_sctransform = FALSE,
-  vars_to_regress = NULL
+  vars_to_regress = NULL,
+  use_partition = FALSE,
+  close_loop = FALSE,
+  learn_graph_control = NULL,
+  interactive = FALSE,
+  root_cells_ref = NA
 )
 }
 \arguments{
 \item{seu}{A \code{Seurat} object}
 
-\item{interactive}{Whether to choose the root node interactively}
-
-\item{use_partition}{Whether to \code{use_partition} when \code{learn_graph}}
-
-\item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
-
-\item{min_branch_len}{The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}}
-
 \item{redo_sctransform}{Whether to redo the \code{Seurat::SCTransform}}
 
 \item{vars_to_regress}{A character string, used in \code{Seurat::SCTransform}}
+
+\item{use_partition}{Whether to \code{use_partition} when \code{monocle3::learn_graph}}
+
+\item{close_loop}{Logic, a parameter in \code{monocle3::learn_graph}}
+
+\item{learn_graph_control}{List, a parameter in \code{monocle3::learn_graph}}
+
+\item{interactive}{Whether to choose the root node interactively}
+
+\item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
 }
 \value{
 A \code{cell_data_set} object with pseudotime as feature
