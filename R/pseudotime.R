@@ -52,6 +52,7 @@ RootNodeSelect <- function(cds,
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @param min_branch_len The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}
 #' @param redo_sctransform Whether to redo the \code{Seurat::SCTransform}
+#' @param vars_to_regress A character string, used in \code{Seurat::SCTransform}
 #' @return A \code{cell_data_set} object with pseudotime as feature
 #' @export
 #'
@@ -60,9 +61,15 @@ FindPseudotime <- function(seu,
                            use_partition = FALSE,
                            root_cells_ref = NA,
                            min_branch_len = 10,
-                           redo_sctransform = FALSE) {
+                           redo_sctransform = FALSE,
+                           vars_to_regress = NULL) {
   if (redo_sctransform) {
-    seu <- Seurat::SCTransform(seu, verbose = TRUE)
+    seu <- Seurat::SCTransform(
+      seu,
+      method = "glmGamPoi",
+      vars.to.regress = vars_to_regress,
+      verbose = TRUE
+    )
     seu <- Seurat::RunPCA(seu, verbose = TRUE)
     seu <-
       Seurat::RunUMAP(seu,

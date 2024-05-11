@@ -10,7 +10,8 @@ FindPseudotime(
   use_partition = FALSE,
   root_cells_ref = NA,
   min_branch_len = 10,
-  redo_sctransform = FALSE
+  redo_sctransform = FALSE,
+  vars_to_regress = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ FindPseudotime(
 \item{min_branch_len}{The minimum branch length in the cell trajectory, the same parameter in \code{monocle3::learn_graph}}
 
 \item{redo_sctransform}{Whether to redo the \code{Seurat::SCTransform}}
+
+\item{vars_to_regress}{A character string, used in \code{Seurat::SCTransform}}
 }
 \value{
 A \code{cell_data_set} object with pseudotime as feature
