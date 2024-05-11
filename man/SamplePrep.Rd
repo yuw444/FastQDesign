@@ -13,6 +13,9 @@ SamplePrep(
   cell_3d_embedding = FALSE,
   pca_used = 1:30,
   vars_to_regress = NULL,
+  use_partition = FALSE,
+  close_loop = FALSE,
+  learn_graph_control = NULL,
   interactive = FALSE,
   root_cells_ref = NA,
   verbose = FALSE,
@@ -35,6 +38,14 @@ SamplePrep(
 \item{pca_used}{Used in \code{Seurat::FindNeighbors} and \code{Seurat::RunUMAP}}
 
 \item{vars_to_regress}{A character string, used in \code{Seurat::SCTransform}}
+
+\item{use_partition}{Whether to \code{use_partition} when \code{monocle3::learn_graph}}
+
+\item{close_loop}{Logic, a parameter in \code{monocle3::learn_graph}}
+
+\item{learn_graph_control}{List, a parameter in \code{monocle3::learn_graph}}
+
+\item{interactive}{Logic, whether to select root cell interactively when considering cell fate}
 
 \item{root_cells_ref}{An vector of cell ids can be used as the root of cell trajectory}
 }

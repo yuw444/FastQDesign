@@ -106,6 +106,10 @@ DownSample <- function(seu,
 #' @param cell_3d_embedding Calculate 3d embedding for the input \code{seu}
 #' @param pca_used Used in \code{Seurat::FindNeighbors} and \code{Seurat::RunUMAP}
 #' @param vars_to_regress A character string, used in \code{Seurat::SCTransform}
+#' @param use_partition Whether to \code{use_partition} when \code{monocle3::learn_graph}
+#' @param close_loop Logic, a parameter in \code{monocle3::learn_graph}
+#' @param learn_graph_control List, a parameter in \code{monocle3::learn_graph}
+#' @param interactive Logic, whether to select root cell interactively when considering cell fate
 #' @param root_cells_ref An vector of cell ids can be used as the root of cell trajectory
 #' @return list Seurat with extra meta.data features,
 #'  data.frames of DE genes by cluster and condition
@@ -120,6 +124,9 @@ SamplePrep <- function(seu,
                        cell_3d_embedding = FALSE,
                        pca_used = 1:30,
                        vars_to_regress = NULL,
+                       use_partition = FALSE,
+                       close_loop = FALSE,
+                       learn_graph_control = NULL,
                        interactive = FALSE,
                        root_cells_ref = NA,
                        verbose = FALSE,
@@ -175,10 +182,13 @@ SamplePrep <- function(seu,
     cat("\n### Finding the pseudotime ....\n")
     temp_cds <- FindPseudotime(
       seu,
+      redo_sctransform = FALSE,
+      vars_to_regress = vars_to_regress,
+      use_partition = use_partition,
+      close_loop = close_loop,
+      learn_graph_control = learn_graph_control,
       interactive = interactive,
-      root_cells_ref = root_cells_ref,
-      min_branch_len = 10,
-      redo_sctransform = FALSE
+      root_cells_ref = root_cells_ref
     )
     seu$pseudotime <- monocle3::pseudotime(temp_cds)
     seu$root_cells <- SummarizedExperiment::colData(temp_cds)$root_cells
