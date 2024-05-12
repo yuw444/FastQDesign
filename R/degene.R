@@ -24,7 +24,7 @@ FindAllMarkersByCondition <- function(
 
   temp <- as.matrix(table(seu$seurat_clusters, seu@meta.data[, condition]))
   temp_qualifer <- apply(temp, 1, function(x) {
-    x[1] != 0 & x[2] != 0 & sum(x) > 10
+    x[1] > 3 & x[2] > 3 & sum(x) > 10
   })
 
   for (iter in 1:nlevels(seu$seurat_clusters)) {
