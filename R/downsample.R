@@ -161,6 +161,7 @@ SamplePrep <- function(seu,
     seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = verbose)
   }
 
+  seu$pseudotime <- NA
   if (!is.na(root_cells_ref[1]) | interactive) {
     cat("\n### Finding the pseudotime ....\n")
     temp_cds <- FastQDesign::FindPseudotime(
@@ -191,8 +192,6 @@ SamplePrep <- function(seu,
                                                      condition = condition,
                                                      ...)
   }
-
-  seu$pseudotime <- NA
 
   seu$umap_1 <- seu$umap_2 <- seu$umap_3 <- NA
   if (cell_3d_embedding) {
