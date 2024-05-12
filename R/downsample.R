@@ -161,6 +161,22 @@ SamplePrep <- function(seu,
     seu <- Seurat::RunUMAP(seu, dims = pca_used, verbose = verbose)
   }
 
+  if (!is.na(root_cells_ref[1]) | interactive) {
+    cat("\n### Finding the pseudotime ....\n")
+    temp_cds <- FastQDesign::FindPseudotime(
+      seu,
+      redo_sctransform = FALSE,
+      vars_to_regress = vars_to_regress,
+      use_partition = use_partition,
+      close_loop = close_loop,
+      learn_graph_control = learn_graph_control,
+      interactive = interactive,
+      root_cells_ref = root_cells_ref
+    )
+    seu$pseudotime <- monocle3::pseudotime(temp_cds)
+    seu$root_cells <- SummarizedExperiment::colData(temp_cds)$root_cells
+  }
+
   cat("\n### Finding all cluster markers ....\n")
   if(!is.na(cluster_id))
     Idents(seu) <- cluster_id
@@ -177,22 +193,6 @@ SamplePrep <- function(seu,
   }
 
   seu$pseudotime <- NA
-
-  if (!is.na(root_cells_ref[1]) | interactive) {
-    cat("\n### Finding the pseudotime ....\n")
-    temp_cds <- FindPseudotime(
-      seu,
-      redo_sctransform = FALSE,
-      vars_to_regress = vars_to_regress,
-      use_partition = use_partition,
-      close_loop = close_loop,
-      learn_graph_control = learn_graph_control,
-      interactive = interactive,
-      root_cells_ref = root_cells_ref
-    )
-    seu$pseudotime <- monocle3::pseudotime(temp_cds)
-    seu$root_cells <- SummarizedExperiment::colData(temp_cds)$root_cells
-  }
 
   seu$umap_1 <- seu$umap_2 <- seu$umap_3 <- NA
   if (cell_3d_embedding) {
