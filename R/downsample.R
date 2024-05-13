@@ -19,11 +19,11 @@
 DownSample <- function(seu,
                        rate_cells = 0.3,
                        rate_umis = 0.3,
-                       seeds = 926,
+                       seed = 926,
                        enable_PCR = FALSE,
                        nb_size = 2,
                        nb_prob = 0.2) {
-  set.seed(seeds * 1000 + rate_cells * 100 + rate_umis * 10)
+  set.seed(seed * 1000 + rate_cells * 100 + rate_umis * 10)
 
   n_obs <- ncol(seu)
   if (rate_umis == 1) {
