@@ -6,6 +6,12 @@
 \usage{
 ExtractMTX(file_path)
 }
+\arguments{
+\item{file_path}{File path to \cod{matrix.mtx.gz}}
+}
+\value{
+A list of metadata
+}
 \description{
 Extract metadata from mtx.gz file
 }
