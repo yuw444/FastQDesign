@@ -37,7 +37,7 @@ FastQDesign <- function(df_power,
                         power_threshold,
                         reads_valid_rate,
                         cells_used_rate,
-                        flow_capacities,
+                        flowcell_capacities,
                         flow_costs,
                         library_costs) {
 
@@ -65,17 +65,19 @@ FastQDesign <- function(df_power,
     )
   }
 
-  # scale down the flow cell capacity according to reads_valid_rate
-  flow_capacities <- flow_capacities * reads_valid_rate
+  original_capacities <- flowcell_capacities
+
+  # scale down the flowcell capacities according to reads_valid_rate
+  flowcell_capacities <- flowcell_capacities * reads_valid_rate
 
   # scale up the cell number according to cells_used_rate
   df_power$N <- df_power$N / cells_used_rate
 
   # check flow constraints
-  if (max(flow_capacities) < min(df_power$N * df_power$R)) {
+  if (max(flowcell_capacities) < min(df_power$N * df_power$R)) {
     warning(
       strwrap(
-        "\033[31m The maximum of `flow_capacities` is smaller
+        "\033[31m The maximum of `flowcell_capacities` is smaller
       than the minimum of `N*R` in `df_power`, the result
       may be biased!\033[0m"
       )
@@ -89,8 +91,8 @@ FastQDesign <- function(df_power,
 
   df_flow_list <- list()
 
-  for (i in seq_along(flow_capacities)) {
-    R <- flow_capacities[i] / unique(df_power$N)
+  for (i in seq_along(flowcell_capacities)) {
+    R <- flowcell_capacities[i] / unique(df_power$N)
     df_flow_list[[i]] <- data.frame(
       N = unique(df_power$N),
       R = R,
@@ -115,15 +117,15 @@ FastQDesign <- function(df_power,
   }
 
   capacties_afforable <-
-    (budget - library_costs) / (min(flow_costs / flow_capacities, 1))
+    (budget - library_costs) / (min(flow_costs / flowcell_capacities, 1))
 
   curves_flow_shared <-
-    purrr::map(c(flow_capacities, capacties_afforable), ~ temp(.x))
+    purrr::map(c(flowcell_capacities, capacties_afforable), ~ temp(.x))
 
-  # curves_flow_ind <- map(flow_capacities, ~ temp(.x))
+  # curves_flow_ind <- map(flowcell_capacities, ~ temp(.x))
 
   converted_capacities <-
-    scales::label_number(scale_cut = scales::cut_short_scale())(flow_capacities)
+    scales::label_number(scale_cut = scales::cut_short_scale())(original_capacities)
   levels(df_flow$flow_cell) <- converted_capacities
 
   #------------------------Individual design------------------------#
@@ -155,7 +157,7 @@ FastQDesign <- function(df_power,
 
   # +2 because of the warning of minimum n is 3
   colors_ind <-
-    RColorBrewer::brewer.pal(n = length(flow_capacities) + 3, name = "Set1")[seq_len(1 + length(flow_capacities))]
+    RColorBrewer::brewer.pal(n = length(flowcell_capacities) + 3, name = "Set1")[seq_len(1 + length(flowcell_capacities))]
   names(colors_ind) <- c(converted_capacities, "Budget")
 
   type_values <- c("power" = 8, "cost" = 9)
@@ -256,9 +258,9 @@ FastQDesign <- function(df_power,
 
   #------------------------Shared design------------------------#
   df_power_shared <- df_power %>%
-    dplyr::mutate(cost = library_costs + min(flow_costs / flow_capacities, 1) * N * R)
-  shared_flow_cells_index <- which.min(flow_costs / flow_capacities)
-  if (shared_flow_cells_index > length(flow_capacities)) {
+    dplyr::mutate(cost = library_costs + min(flow_costs / flowcell_capacities, 1) * N * R)
+  shared_flow_cells_index <- which.min(flow_costs / flowcell_capacities)
+  if (shared_flow_cells_index > length(flowcell_capacities)) {
     share_available_design <- NULL
     share_optimal_cost <- NULL
     share_optimal_power <- NULL
@@ -367,7 +369,7 @@ FastQDesign <- function(df_power,
       ggplot2::geom_text(
         x = max(df_power_shared$cost, na.rm = TRUE) - diff(range(df_power_shared$cost) / 5),
         y = power_threshold,
-        label = "Power Threshold",
+        label = "Threshold",
         col = "red"
       ) +
       ggplot2::geom_point(
@@ -408,3 +410,4 @@ FastQDesign <- function(df_power,
   )
   return(output)
 }
+
