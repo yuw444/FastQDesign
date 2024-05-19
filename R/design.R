@@ -233,7 +233,7 @@ FastQDesign <- function(df_power,
     ggplot2::geom_text(
       x = max(df_flow$cost, na.rm = TRUE) - diff(range(df_flow$cost) / 5),
       y = power_threshold,
-      label = "Power Threshold",
+      label = "Threshold",
       col = "red"
     ) +
     ggplot2::geom_point(
