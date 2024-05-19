@@ -86,7 +86,7 @@ ConditionalShannonEntropy <- function(condition, feature) {
 
 #' Extract metadata from mtx.gz file
 #'
-#' @import jsonlite fromJSON
+#' @importFrom jsonlite fromJSON
 #' @param file_path File path to \cod{matrix.mtx.gz}
 #' @return A list of metadata
 #'
