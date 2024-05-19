@@ -8,6 +8,8 @@ FastQDesign(
   df_power,
   budget,
   power_threshold,
+  reads_valid_rate,
+  cells_used_rate,
   flow_capacities,
   flow_costs,
   library_costs
@@ -26,6 +28,11 @@ FastQDesign(
 \item{budget}{A numeric of budget}
 
 \item{power_threshold}{A numeric of power threshold}
+
+\item{reads_valid_rate}{The percentage of FastQ reads that is valid when converted to UMIs in the FastQ reference}
+
+\item{cells_used_rate}{The percentage of Cells passed quality control in the
+\code{./filtered_feature_bc_matrix/barcodes.tsv.gz} after the alignment}
 
 \item{flow_capacities}{A vector of flow capacities}
 
