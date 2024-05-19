@@ -7,7 +7,7 @@
 ExtractMTX(file_path)
 }
 \arguments{
-\item{file_path}{File path to \cod{matrix.mtx.gz}}
+\item{file_path}{File path to \code{matrix.mtx.gz}}
 }
 \value{
 A list of metadata
