@@ -75,10 +75,13 @@ FastQDesign <- function(df_power,
   df_power$N <- df_power$N / cells_used_rate
 
   if (is.na(cell_increment)) {
-    cell_increment <- ceiling(max(df_power$N) / 10)
+    cell_increment <- ceiling(max(df_power$N) / 100) * 10
   }
 
-  N <- seq(cell_increment, ceiling(max(df_power$N) / cell_increment) * cell_increment, cell_increment)
+  N <-
+    seq(cell_increment,
+        ceiling(max(df_power$N) / cell_increment) * cell_increment,
+        cell_increment)
   ref_capacities <- max(df_power$N) * max(df_power$R)
   max_N <- max(N)
   max_R <- ref_capacities / max_N
@@ -96,8 +99,7 @@ FastQDesign <- function(df_power,
   # scam model
   model_scam <-
     scam::scam(power ~ s(N, k = 10, bs = "mpi") + s(R, k = 10, bs = "mpi"),
-               data = df_power
-    )
+               data = df_power)
 
   df_flow_list <- list()
 
@@ -107,20 +109,13 @@ FastQDesign <- function(df_power,
       N = N,
       R = R,
       power = predict(model_scam,
-                      newdata = data.frame(
-                        N = N,
-                        R = R
-                      )
-      )
+                      newdata = data.frame(N = N,
+                                           R = R))
     ) %>%
-      dplyr::filter(
-        `N` < max_N,
-        `R` < max_R
-      ) %>%
-      dplyr::mutate(
-        flow_cell = i,
-        cost = library_costs + flow_costs[i]
-      )
+      dplyr::filter(`N` < max_N,
+                    `R` < max_R) %>%
+      dplyr::mutate(flow_cell = i,
+                    cost = library_costs + flow_costs[i])
   }
 
   df_flow <- do.call(rbind, df_flow_list) %>%
@@ -146,10 +141,8 @@ FastQDesign <- function(df_power,
 
   #------------------------Individual design------------------------#
   ind_available_design <- df_flow %>%
-    dplyr::filter(
-      power >= power_threshold,
-      cost <= budget
-    )
+    dplyr::filter(power >= power_threshold,
+                  cost <= budget)
 
   if (nrow(ind_available_design) == 0) {
     warning(
@@ -180,15 +173,11 @@ FastQDesign <- function(df_power,
 
   type_values <- c("power" = 8, "cost" = 9)
 
-  p_design_ind <- ggplot2::ggplot(
-    df_flow,
-    ggplot2::aes(N, R)
-  ) +
-    ggplot2::geom_point(
-      shape = 21,
-      size = 3,
-      ggplot2::aes(color = flow_cell, fill = power)
-    ) +
+  p_design_ind <- ggplot2::ggplot(df_flow,
+                                  ggplot2::aes(N, R)) +
+    ggplot2::geom_point(shape = 21,
+                        size = 3,
+                        ggplot2::aes(color = flow_cell, fill = power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -199,10 +188,8 @@ FastQDesign <- function(df_power,
     purrr::map2(
       curves_flow_shared,
       c(converted_capacities, "Budget"),
-      ~ ggplot2::stat_function(
-        fun = .x,
-        ggplot2::aes(color = .y)
-      )
+      ~ ggplot2::stat_function(fun = .x,
+                               ggplot2::aes(color = .y))
     ) +
     ggplot2::scale_color_manual(
       values = colors_ind,
@@ -217,26 +204,20 @@ FastQDesign <- function(df_power,
       labels = scales::label_number(suffix = " K", scale = 1e-3),
       limits = c(0, max(df_power$N) + 10)
     ) +
-    ggplot2::labs(
-      x = "Target number of cells",
-      y = "Target reads per cell"
-    ) +
+    ggplot2::labs(x = "Target number of cells",
+                  y = "Target reads per cell") +
     ggplot2::geom_point(
-      data = ind_optimal[!is.na(ind_optimal$N), ],
+      data = ind_optimal[!is.na(ind_optimal$N),],
       ggplot2::aes(N, R, shape = type),
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(
-      values = type_values,
-      name = "Optimal Design"
-    ) +
+    ggplot2::scale_shape_manual(values = type_values,
+                                name = "Optimal Design") +
     ggplot2::theme_bw()
 
-  p_power_cost_ind <- ggplot2::ggplot(
-    df_flow,
-    ggplot2::aes(cost, power)
-  ) +
+  p_power_cost_ind <- ggplot2::ggplot(df_flow,
+                                      ggplot2::aes(cost, power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -244,20 +225,16 @@ FastQDesign <- function(df_power,
       values = c(0, 1),
       name = "Power"
     ) +
-    ggplot2::geom_point(
-      shape = 21,
-      size = 3,
-      ggplot2::aes(color = flow_cell, fill = power)
-    ) +
+    ggplot2::geom_point(shape = 21,
+                        size = 3,
+                        ggplot2::aes(color = flow_cell, fill = power)) +
     ggplot2::scale_color_manual(
       values = colors_ind,
       breaks = c(converted_capacities, "Budget"),
       name = "Flow Cell Capacity"
     ) +
-    ggplot2::labs(
-      x = "Cost",
-      y = "Power"
-    ) +
+    ggplot2::labs(x = "Cost",
+                  y = "Power") +
     ggplot2::geom_hline(yintercept = power_threshold, col = "red") +
     ggplot2::geom_vline(xintercept = budget, col = "blue") +
     ggplot2::geom_text(
@@ -273,15 +250,13 @@ FastQDesign <- function(df_power,
       col = "red"
     ) +
     ggplot2::geom_point(
-      data = ind_optimal[!is.na(ind_optimal$N), ],
+      data = ind_optimal[!is.na(ind_optimal$N),],
       ggplot2::aes(cost, power, shape = type),
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(
-      values = type_values,
-      name = "Optimal Design"
-    ) +
+    ggplot2::scale_shape_manual(values = type_values,
+                                name = "Optimal Design") +
     ggplot2::guides(color = "none") +
     ggplot2::theme_bw()
 
@@ -293,24 +268,24 @@ FastQDesign <- function(df_power,
   )
 
   #------------------------Shared design------------------------#
-  R_shared_base <- ref_capacities / (length(N)^2) / min(N) * (1:length(N))
-  grid_list <- list(
-    N = N,
-    R = R_shared_base
-  )
+  R_shared_base <-
+    ref_capacities / (length(N) ^ 2) / min(N) * (1:length(N))
+  grid_list <- list(N = N,
+                    R = R_shared_base)
   df_power_shared <- expand.grid(grid_list)
-  df_power_shared$power <- predict(model_scam, newdata = df_power_shared)
+  df_power_shared$power <-
+    predict(model_scam, newdata = df_power_shared)
 
-  shared_flow_cells_index <- which.min(flow_costs / flowcell_capacities)
+  shared_flow_cells_index <-
+    which.min(flow_costs / flowcell_capacities)
   flow_cell_used <- converted_capacities[shared_flow_cells_index]
 
-  df_power_shared$cost <- library_costs + min(flow_costs / flowcell_capacities) * df_power_shared$R * df_power_shared$N
+  df_power_shared$cost <-
+    library_costs + min(flow_costs / flowcell_capacities) * df_power_shared$R * df_power_shared$N
   df_power_shared$flow_cell <- flow_cell_used
   share_available_design <- df_power_shared %>%
-    dplyr::filter(
-      power >= power_threshold,
-      cost <= budget
-    )
+    dplyr::filter(power >= power_threshold,
+                  cost <= budget)
 
   if (nrow(share_available_design) == 0) {
     warning(
@@ -332,20 +307,14 @@ FastQDesign <- function(df_power,
     dplyr::slice_head() %>%
     dplyr::mutate(type = "cost")
 
-  share_optimal <- rbind(
-    share_optimal_power,
-    share_optimal_cost
-  )
+  share_optimal <- rbind(share_optimal_power,
+                         share_optimal_cost)
 
-  p_design_share <- ggplot2::ggplot(
-    df_power_shared,
-    ggplot2::aes(N, R)
-  ) +
-    ggplot2::geom_point(
-      shape = 21,
-      size = 3,
-      ggplot2::aes(fill = power)
-    ) +
+  p_design_share <- ggplot2::ggplot(df_power_shared,
+                                    ggplot2::aes(N, R)) +
+    ggplot2::geom_point(shape = 21,
+                        size = 3,
+                        ggplot2::aes(fill = power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -364,10 +333,8 @@ FastQDesign <- function(df_power,
     purrr::map2(
       curves_flow_shared,
       c(converted_capacities, "Budget"),
-      ~ ggplot2::stat_function(
-        fun = .x,
-        ggplot2::aes(color = .y)
-      )
+      ~ ggplot2::stat_function(fun = .x,
+                               ggplot2::aes(color = .y))
     ) +
     ggplot2::scale_color_manual(
       values = colors_ind,
@@ -380,21 +347,15 @@ FastQDesign <- function(df_power,
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(
-      values = type_values,
-      name = "Optimal Design"
-    ) +
-    ggplot2::labs(
-      x = "Target number of cells",
-      y = "Target reads per cell",
-      shape = "Optimal Design"
-    ) +
+    ggplot2::scale_shape_manual(values = type_values,
+                                name = "Optimal Design") +
+    ggplot2::labs(x = "Target number of cells",
+                  y = "Target reads per cell",
+                  shape = "Optimal Design") +
     ggplot2::theme_bw()
 
-  p_power_cost_share <- ggplot2::ggplot(
-    df_power_shared,
-    ggplot2::aes(cost, power, fill = power)
-  ) +
+  p_power_cost_share <- ggplot2::ggplot(df_power_shared,
+                                        ggplot2::aes(cost, power, fill = power)) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -402,15 +363,11 @@ FastQDesign <- function(df_power,
       values = c(0, 1),
       name = "Power"
     ) +
-    ggplot2::geom_point(
-      shape = 21,
-      size = 3,
-      ggplot2::aes(color = flow_cell)
-    ) +
-    ggplot2::labs(
-      x = "Cost",
-      y = "Power"
-    ) +
+    ggplot2::geom_point(shape = 21,
+                        size = 3,
+                        ggplot2::aes(color = flow_cell)) +
+    ggplot2::labs(x = "Cost",
+                  y = "Power") +
     ggplot2::scale_color_manual(
       values = colors_ind,
       breaks = c(converted_capacities, "Budget"),
@@ -436,10 +393,8 @@ FastQDesign <- function(df_power,
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(
-      values = type_values,
-      name = "Optimal Design"
-    ) +
+    ggplot2::scale_shape_manual(values = type_values,
+                                name = "Optimal Design") +
     ggplot2::theme_bw() +
     ggplot2::guides(color = "none")
 
