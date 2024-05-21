@@ -10,9 +10,10 @@ FastQDesign(
   power_threshold,
   reads_valid_rate,
   cells_used_rate,
-  flow_capacities,
+  flowcell_capacities,
   flow_costs,
-  library_costs
+  library_costs,
+  cell_increment = NA
 )
 }
 \arguments{
@@ -34,11 +35,13 @@ FastQDesign(
 \item{cells_used_rate}{The percentage of Cells passed quality control in the
 \code{./filtered_feature_bc_matrix/barcodes.tsv.gz} after the alignment}
 
-\item{flow_capacities}{A vector of flow capacities}
-
 \item{flow_costs}{A vector of flow costs}
 
 \item{library_costs}{A vector of library costs}
+
+\item{cell_increment}{A numeric of cell increment for the design, default is}
+
+\item{flow_capacities}{A vector of flow capacities}
 }
 \value{
 A list with power information under constraints and ggplots

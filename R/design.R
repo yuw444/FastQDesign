@@ -28,6 +28,7 @@
 #' @param flow_capacities A vector of flow capacities
 #' @param flow_costs A vector of flow costs
 #' @param library_costs A vector of library costs
+#' @param cell_increment A numeric of cell increment for the design, default is
 #' @return A list with power information under constraints and ggplots
 #'
 #' @export
@@ -39,8 +40,8 @@ FastQDesign <- function(df_power,
                         cells_used_rate,
                         flowcell_capacities,
                         flow_costs,
-                        library_costs) {
-
+                        library_costs,
+                        cell_increment = NA) {
   # check budget constraints
   if (budget < min(library_costs + flow_costs)) {
     stop(
@@ -73,6 +74,14 @@ FastQDesign <- function(df_power,
   # scale up the cell number according to cells_used_rate
   df_power$N <- df_power$N / cells_used_rate
 
+  if (is.na(cell_increment)) {
+    cell_increment <- ceiling(max(df_power$N) / 10)
+  }
+
+  N <- seq(cell_increment, ceiling(max(df_power$N) / cell_increment) * cell_increment, cell_increment)
+  ref_capacities <- max(df_power$N) * max(df_power$R)
+  max_N <- max(N)
+  max_R <- ref_capacities / max_N
   # check flow constraints
   if (max(flowcell_capacities) < min(df_power$N * df_power$R)) {
     warning(
@@ -86,38 +95,45 @@ FastQDesign <- function(df_power,
 
   # scam model
   model_scam <-
-    scam::scam(power ~ s(N, k = 10, bs = 'mpi') + s(R, k = 10, bs = 'mpi'),
-               data = df_power)
+    scam::scam(power ~ s(N, k = 10, bs = "mpi") + s(R, k = 10, bs = "mpi"),
+               data = df_power
+    )
 
   df_flow_list <- list()
 
   for (i in seq_along(flowcell_capacities)) {
-    R <- flowcell_capacities[i] / unique(df_power$N)
+    R <- flowcell_capacities[i] / N
     df_flow_list[[i]] <- data.frame(
-      N = unique(df_power$N),
+      N = N,
       R = R,
       power = predict(model_scam,
                       newdata = data.frame(
-                        N = unique(df_power$N),
+                        N = N,
                         R = R
-                      ))
+                      )
+      )
     ) %>%
-      dplyr::filter(N < max(df_power$N) &
-                      R < max(df_power$R)) %>%
-      dplyr::mutate(flow_cell = i,
-                    cost = library_costs + flow_costs[i])
+      dplyr::filter(
+        `N` < max_N,
+        `R` < max_R
+      ) %>%
+      dplyr::mutate(
+        flow_cell = i,
+        cost = library_costs + flow_costs[i]
+      )
   }
 
   df_flow <- do.call(rbind, df_flow_list) %>%
     dplyr::mutate(flow_cell = factor(flow_cell))
 
   temp <- function(y) {
-    function(x)
+    function(x) {
       y / x
+    }
   }
 
   capacties_afforable <-
-    (budget - library_costs) / (min(flow_costs / flowcell_capacities, 1))
+    (budget - library_costs) / min(flow_costs / original_capacities) * reads_valid_rate
 
   curves_flow_shared <-
     purrr::map(c(flowcell_capacities, capacties_afforable), ~ temp(.x))
@@ -130,8 +146,10 @@ FastQDesign <- function(df_power,
 
   #------------------------Individual design------------------------#
   ind_available_design <- df_flow %>%
-    dplyr::filter(power >= power_threshold,
-                  cost <= budget)
+    dplyr::filter(
+      power >= power_threshold,
+      cost <= budget
+    )
 
   if (nrow(ind_available_design) == 0) {
     warning(
@@ -162,11 +180,15 @@ FastQDesign <- function(df_power,
 
   type_values <- c("power" = 8, "cost" = 9)
 
-  p_design_ind <- ggplot2::ggplot(df_flow,
-                                  ggplot2::aes(N, R)) +
-    ggplot2::geom_point(shape = 21,
-                        size = 3,
-                        ggplot2::aes(color = flow_cell, fill = power)) +
+  p_design_ind <- ggplot2::ggplot(
+    df_flow,
+    ggplot2::aes(N, R)
+  ) +
+    ggplot2::geom_point(
+      shape = 21,
+      size = 3,
+      ggplot2::aes(color = flow_cell, fill = power)
+    ) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -177,8 +199,10 @@ FastQDesign <- function(df_power,
     purrr::map2(
       curves_flow_shared,
       c(converted_capacities, "Budget"),
-      ~ ggplot2::stat_function(fun = .x,
-                               ggplot2::aes(color = .y))
+      ~ ggplot2::stat_function(
+        fun = .x,
+        ggplot2::aes(color = .y)
+      )
     ) +
     ggplot2::scale_color_manual(
       values = colors_ind,
@@ -191,22 +215,28 @@ FastQDesign <- function(df_power,
     ) +
     ggplot2::scale_x_continuous(
       labels = scales::label_number(suffix = " K", scale = 1e-3),
-      limits = c(0, max(df_power$N))
+      limits = c(0, max(df_power$N) + 10)
     ) +
-    ggplot2::labs(x = "Target number of cells",
-                  y = "Target reads per cell") +
+    ggplot2::labs(
+      x = "Target number of cells",
+      y = "Target reads per cell"
+    ) +
     ggplot2::geom_point(
       data = ind_optimal[!is.na(ind_optimal$N), ],
       ggplot2::aes(N, R, shape = type),
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(values = type_values,
-                                name = "Optimal Design") +
+    ggplot2::scale_shape_manual(
+      values = type_values,
+      name = "Optimal Design"
+    ) +
     ggplot2::theme_bw()
 
-  p_power_cost_ind <- ggplot2::ggplot(df_flow,
-                                      ggplot2::aes(cost, power)) +
+  p_power_cost_ind <- ggplot2::ggplot(
+    df_flow,
+    ggplot2::aes(cost, power)
+  ) +
     ggplot2::scale_fill_gradientn(
       colors = c("white", "red"),
       breaks = seq(0, 1, length.out = 6),
@@ -214,16 +244,20 @@ FastQDesign <- function(df_power,
       values = c(0, 1),
       name = "Power"
     ) +
-    ggplot2::geom_point(shape = 21,
-                        size = 3,
-                        ggplot2::aes(color = flow_cell, fill = power)) +
+    ggplot2::geom_point(
+      shape = 21,
+      size = 3,
+      ggplot2::aes(color = flow_cell, fill = power)
+    ) +
     ggplot2::scale_color_manual(
       values = colors_ind,
       breaks = c(converted_capacities, "Budget"),
       name = "Flow Cell Capacity"
     ) +
-    ggplot2::labs(x = "Cost",
-                  y = "Power") +
+    ggplot2::labs(
+      x = "Cost",
+      y = "Power"
+    ) +
     ggplot2::geom_hline(yintercept = power_threshold, col = "red") +
     ggplot2::geom_vline(xintercept = budget, col = "blue") +
     ggplot2::geom_text(
@@ -244,8 +278,10 @@ FastQDesign <- function(df_power,
       size = 4,
       color = "purple"
     ) +
-    ggplot2::scale_shape_manual(values = type_values,
-                                name = "Optimal Design") +
+    ggplot2::scale_shape_manual(
+      values = type_values,
+      name = "Optimal Design"
+    ) +
     ggplot2::guides(color = "none") +
     ggplot2::theme_bw()
 
@@ -257,139 +293,163 @@ FastQDesign <- function(df_power,
   )
 
   #------------------------Shared design------------------------#
-  df_power_shared <- df_power %>%
-    dplyr::mutate(cost = library_costs + min(flow_costs / flowcell_capacities, 1) * N * R)
-  shared_flow_cells_index <- which.min(flow_costs / flowcell_capacities)
-  if (shared_flow_cells_index > length(flowcell_capacities)) {
-    share_available_design <- NULL
-    share_optimal_cost <- NULL
-    share_optimal_power <- NULL
-    p_share <- NULL
-  } else {
-    flow_cell_used <- converted_capacities[shared_flow_cells_index]
-    df_power_shared$flow_cell <- flow_cell_used
-    share_available_design <- df_power_shared %>%
-      dplyr::filter(power >= power_threshold,
-                    cost <= budget)
+  R_shared_base <- ref_capacities / (length(N)^2) / min(N) * (1:length(N))
+  grid_list <- list(
+    N = N,
+    R = R_shared_base
+  )
+  df_power_shared <- expand.grid(grid_list)
+  df_power_shared$power <- predict(model_scam, newdata = df_power_shared)
 
-    if (nrow(share_available_design) == 0) {
-      warning(
-        strwrap(
-          "\033[33m Missing optimal share design with current budget
+  shared_flow_cells_index <- which.min(flow_costs / flowcell_capacities)
+  flow_cell_used <- converted_capacities[shared_flow_cells_index]
+
+  df_power_shared$cost <- library_costs + min(flow_costs / flowcell_capacities) * df_power_shared$R * df_power_shared$N
+  df_power_shared$flow_cell <- flow_cell_used
+  share_available_design <- df_power_shared %>%
+    dplyr::filter(
+      power >= power_threshold,
+      cost <= budget
+    )
+
+  if (nrow(share_available_design) == 0) {
+    warning(
+      strwrap(
+        "\033[33m Missing optimal share design with current budget
         and power restriction, please increase budget or lower
         power restriction!\033[0m"
-        )
       )
-    }
-
-    share_optimal_power <- share_available_design %>%
-      dplyr::arrange(dplyr::desc(power)) %>%
-      dplyr::slice_head() %>%
-      dplyr::mutate(type = "power")
-
-    share_optimal_cost <- share_available_design %>%
-      dplyr::arrange(cost, dplyr::desc(power)) %>%
-      dplyr::slice_head() %>%
-      dplyr::mutate(type = "cost")
-
-    share_optimal <- rbind(share_optimal_power,
-                           share_optimal_cost)
-
-    p_design_share <- ggplot2::ggplot(df_power_shared,
-                                      ggplot2::aes(N, R)) +
-      ggplot2::geom_point(shape = 21,
-                          size = 3,
-                          ggplot2::aes(fill = power)) +
-      ggplot2::scale_fill_gradientn(
-        colors = c("white", "red"),
-        breaks = seq(0, 1, length.out = 6),
-        limits = c(0, 1),
-        values = c(0, 1),
-        name = "Power"
-      ) +
-      ggplot2::scale_y_continuous(
-        labels = scales::label_number(suffix = " K", scale = 1e-3),
-        limits = c(0, max(df_power$R))
-      ) +
-      ggplot2::scale_x_continuous(
-        labels = scales::label_number(suffix = " K", scale = 1e-3),
-        limits = c(0, max(df_power$N))
-      ) +
-      purrr::map2(
-        curves_flow_shared,
-        c(converted_capacities, "Budget"),
-        ~ ggplot2::stat_function(fun = .x,
-                                 ggplot2::aes(color = .y))
-      ) +
-      ggplot2::scale_color_manual(
-        values = colors_ind,
-        breaks = c(converted_capacities, "Budget"),
-        name = "Flow Cell Capacity"
-      ) +
-      ggplot2::geom_point(
-        data = share_optimal,
-        ggplot2::aes(N, R, shape = type),
-        size = 4,
-        color = "purple"
-      ) +
-      ggplot2::scale_shape_manual(values = type_values,
-                                  name = "Optimal Design") +
-      ggplot2::labs(x = "Target number of cells",
-                    y = "Target reads per cell",
-                    shape = "Optimal Design") +
-      ggplot2::theme_bw()
-
-    p_power_cost_share <- ggplot2::ggplot(df_power_shared,
-                                          ggplot2::aes(cost, power, fill = power)) +
-      ggplot2::scale_fill_gradientn(
-        colors = c("white", "red"),
-        breaks = seq(0, 1, length.out = 6),
-        limits = c(0, 1),
-        values = c(0, 1),
-        name = "Power"
-      ) +
-      ggplot2::geom_point(shape = 21,
-                          size = 3,
-                          ggplot2::aes(color = flow_cell)) +
-      ggplot2::labs(x = "Cost",
-                    y = "Power") +
-      ggplot2::scale_color_manual(
-        values = colors_ind,
-        breaks = c(converted_capacities, "Budget"),
-        name = "Flow Cell Capacity"
-      ) +
-      ggplot2::geom_hline(yintercept = power_threshold, col = "red") +
-      ggplot2::geom_vline(xintercept = budget, col = "blue") +
-      ggplot2::geom_text(
-        x = budget,
-        y = min(df_power_shared$power) + diff(range(df_power_shared$power)) / 10,
-        label = "Budget",
-        col = "blue"
-      ) +
-      ggplot2::geom_text(
-        x = max(df_power_shared$cost, na.rm = TRUE) - diff(range(df_power_shared$cost) / 5),
-        y = power_threshold,
-        label = "Threshold",
-        col = "red"
-      ) +
-      ggplot2::geom_point(
-        data = share_optimal,
-        ggplot2::aes(cost, power, shape = type),
-        size = 4,
-        color = "purple"
-      ) +
-      ggplot2::scale_shape_manual(values = type_values,
-                                  name = "Optimal Design") +
-      ggplot2::theme_bw() +
-      ggplot2::guides(color = "none")
-
-    p_share <- patchwork::wrap_plots(
-      p_design_share +
-        p_power_cost_share +
-        patchwork::plot_layout(guides = "collect") &
-        ggplot2::theme(legend.position = "bottom")
     )
   }
+
+  share_optimal_power <- share_available_design %>%
+    dplyr::arrange(dplyr::desc(power)) %>%
+    dplyr::slice_head() %>%
+    dplyr::mutate(type = "power")
+
+  share_optimal_cost <- share_available_design %>%
+    dplyr::arrange(cost, dplyr::desc(power)) %>%
+    dplyr::slice_head() %>%
+    dplyr::mutate(type = "cost")
+
+  share_optimal <- rbind(
+    share_optimal_power,
+    share_optimal_cost
+  )
+
+  p_design_share <- ggplot2::ggplot(
+    df_power_shared,
+    ggplot2::aes(N, R)
+  ) +
+    ggplot2::geom_point(
+      shape = 21,
+      size = 3,
+      ggplot2::aes(fill = power)
+    ) +
+    ggplot2::scale_fill_gradientn(
+      colors = c("white", "red"),
+      breaks = seq(0, 1, length.out = 6),
+      limits = c(0, 1),
+      values = c(0, 1),
+      name = "Power"
+    ) +
+    ggplot2::scale_y_continuous(
+      labels = scales::label_number(suffix = " K", scale = 1e-3),
+      limits = c(0, max(df_power$R))
+    ) +
+    ggplot2::scale_x_continuous(
+      labels = scales::label_number(suffix = " K", scale = 1e-3),
+      limits = c(0, max(df_power$N) + 10)
+    ) +
+    purrr::map2(
+      curves_flow_shared,
+      c(converted_capacities, "Budget"),
+      ~ ggplot2::stat_function(
+        fun = .x,
+        ggplot2::aes(color = .y)
+      )
+    ) +
+    ggplot2::scale_color_manual(
+      values = colors_ind,
+      breaks = c(converted_capacities, "Budget"),
+      name = "Flow Cell Capacity"
+    ) +
+    ggplot2::geom_point(
+      data = share_optimal,
+      ggplot2::aes(N, R, shape = type),
+      size = 4,
+      color = "purple"
+    ) +
+    ggplot2::scale_shape_manual(
+      values = type_values,
+      name = "Optimal Design"
+    ) +
+    ggplot2::labs(
+      x = "Target number of cells",
+      y = "Target reads per cell",
+      shape = "Optimal Design"
+    ) +
+    ggplot2::theme_bw()
+
+  p_power_cost_share <- ggplot2::ggplot(
+    df_power_shared,
+    ggplot2::aes(cost, power, fill = power)
+  ) +
+    ggplot2::scale_fill_gradientn(
+      colors = c("white", "red"),
+      breaks = seq(0, 1, length.out = 6),
+      limits = c(0, 1),
+      values = c(0, 1),
+      name = "Power"
+    ) +
+    ggplot2::geom_point(
+      shape = 21,
+      size = 3,
+      ggplot2::aes(color = flow_cell)
+    ) +
+    ggplot2::labs(
+      x = "Cost",
+      y = "Power"
+    ) +
+    ggplot2::scale_color_manual(
+      values = colors_ind,
+      breaks = c(converted_capacities, "Budget"),
+      name = "Flow Cell Capacity"
+    ) +
+    ggplot2::geom_hline(yintercept = power_threshold, col = "red") +
+    ggplot2::geom_vline(xintercept = budget, col = "blue") +
+    ggplot2::geom_text(
+      x = budget,
+      y = min(df_power_shared$power) + diff(range(df_power_shared$power)) / 10,
+      label = "Budget",
+      col = "blue"
+    ) +
+    ggplot2::geom_text(
+      x = max(df_power_shared$cost, na.rm = TRUE) - diff(range(df_power_shared$cost) / 5),
+      y = power_threshold,
+      label = "Threshold",
+      col = "red"
+    ) +
+    ggplot2::geom_point(
+      data = share_optimal,
+      ggplot2::aes(cost, power, shape = type),
+      size = 4,
+      color = "purple"
+    ) +
+    ggplot2::scale_shape_manual(
+      values = type_values,
+      name = "Optimal Design"
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::guides(color = "none")
+
+  p_share <- patchwork::wrap_plots(
+    p_design_share +
+      p_power_cost_share +
+      patchwork::plot_layout(guides = "collect") &
+      ggplot2::theme(legend.position = "bottom")
+  )
+
 
   #------------------------Return------------------------#
   output <- list(
@@ -410,4 +470,3 @@ FastQDesign <- function(df_power,
   )
   return(output)
 }
-
