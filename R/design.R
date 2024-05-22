@@ -23,12 +23,12 @@
 #' @param budget A numeric of budget
 #' @param power_threshold A numeric of power threshold
 #' @param reads_valid_rate The percentage of FastQ reads that is valid when converted to UMIs in the FastQ reference
-#' @param cells_used_rate The percentage of Cells passed quality control in the
 #'  \code{./filtered_feature_bc_matrix/barcodes.tsv.gz} after the alignment
 #' @param flow_capacities A vector of flow capacities
 #' @param flow_costs A vector of flow costs
 #' @param library_costs A vector of library costs
-#' @param cell_increment A numeric of cell increment for the design, default is
+#' @param cell_increment A numeric of cell increment for the design, default is \code{floor(max(df_power$N) / 50) * 5}
+#' @param read_increment A numeric of read increment for the design, default is \code{floor(max(df_power$R) / 100) * 10}
 #' @return A list with power information under constraints and ggplots
 #'
 #' @export
@@ -37,11 +37,11 @@ FastQDesign <- function(df_power,
                         budget,
                         power_threshold,
                         reads_valid_rate,
-                        cells_used_rate,
                         flowcell_capacities,
                         flow_costs,
                         library_costs,
-                        cell_increment = NA) {
+                        cell_increment = NA,
+                        read_increment = NA) {
   # check budget constraints
   if (budget < min(library_costs + flow_costs)) {
     stop(
@@ -71,20 +71,24 @@ FastQDesign <- function(df_power,
   # scale down the flowcell capacities according to reads_valid_rate
   flowcell_capacities <- flowcell_capacities * reads_valid_rate
 
-  # scale up the cell number according to cells_used_rate
-  df_power$N <- df_power$N / cells_used_rate
-
   if (is.na(cell_increment)) {
-    cell_increment <- ceiling(max(df_power$N) / 100) * 10
+    cell_increment <- floor(max(df_power$N) / 50) * 5
+  }
+
+  if (is.na(read_increment)) {
+    read_increment <- floor(max(df_power$R) / 100) * 10
   }
 
   N <-
     seq(cell_increment,
-        ceiling(max(df_power$N) / cell_increment) * cell_increment,
+        floor(max(df_power$N) / cell_increment) * cell_increment,
         cell_increment)
-  ref_capacities <- max(df_power$N) * max(df_power$R)
+  R_shared_base <-
+    seq(read_increment,
+        floor(max(df_power$R) / read_increment) * read_increment,
+        read_increment)
   max_N <- max(N)
-  max_R <- ref_capacities / max_N
+  max_R <- max(R_shared_base)
   # check flow constraints
   if (max(flowcell_capacities) < min(df_power$N * df_power$R)) {
     warning(
@@ -198,11 +202,11 @@ FastQDesign <- function(df_power,
     ) +
     ggplot2::scale_y_continuous(
       labels = scales::label_number(suffix = " K", scale = 1e-3),
-      limits = c(0, max(df_power$R))
+      limits = c(0, max(df_flow$R) + 10)
     ) +
     ggplot2::scale_x_continuous(
       labels = scales::label_number(suffix = " K", scale = 1e-3),
-      limits = c(0, max(df_power$N) + 10)
+      limits = c(0, max(df_flow$N) + 10)
     ) +
     ggplot2::labs(x = "Target number of cells",
                   y = "Target reads per cell") +
@@ -268,8 +272,6 @@ FastQDesign <- function(df_power,
   )
 
   #------------------------Shared design------------------------#
-  R_shared_base <-
-    ref_capacities / (length(N) ^ 2) / min(N) * (1:length(N))
   grid_list <- list(N = N,
                     R = R_shared_base)
   df_power_shared <- expand.grid(grid_list)
@@ -324,11 +326,11 @@ FastQDesign <- function(df_power,
     ) +
     ggplot2::scale_y_continuous(
       labels = scales::label_number(suffix = " K", scale = 1e-3),
-      limits = c(0, max(df_power$R))
+      limits = c(0, max(df_power_shared$R) + 10)
     ) +
     ggplot2::scale_x_continuous(
       labels = scales::label_number(suffix = " K", scale = 1e-3),
-      limits = c(0, max(df_power$N) + 10)
+      limits = c(0, max(df_power_shared$N) + 10)
     ) +
     purrr::map2(
       curves_flow_shared,

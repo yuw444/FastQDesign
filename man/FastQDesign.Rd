@@ -9,11 +9,11 @@ FastQDesign(
   budget,
   power_threshold,
   reads_valid_rate,
-  cells_used_rate,
   flowcell_capacities,
   flow_costs,
   library_costs,
-  cell_increment = NA
+  cell_increment = NA,
+  read_increment = NA
 )
 }
 \arguments{
@@ -30,16 +30,16 @@ FastQDesign(
 
 \item{power_threshold}{A numeric of power threshold}
 
-\item{reads_valid_rate}{The percentage of FastQ reads that is valid when converted to UMIs in the FastQ reference}
-
-\item{cells_used_rate}{The percentage of Cells passed quality control in the
+\item{reads_valid_rate}{The percentage of FastQ reads that is valid when converted to UMIs in the FastQ reference
 \code{./filtered_feature_bc_matrix/barcodes.tsv.gz} after the alignment}
 
 \item{flow_costs}{A vector of flow costs}
 
 \item{library_costs}{A vector of library costs}
 
-\item{cell_increment}{A numeric of cell increment for the design, default is}
+\item{cell_increment}{A numeric of cell increment for the design, default is \code{floor(max(df_power$N) / 50) * 5}}
+
+\item{read_increment}{A numeric of read increment for the design, default is \code{floor(max(df_power$R) / 100) * 10}}
 
 \item{flow_capacities}{A vector of flow capacities}
 }
