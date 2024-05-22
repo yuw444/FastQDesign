@@ -91,22 +91,19 @@ ConditionalShannonEntropy <- function(condition, feature) {
 #' @return A list of metadata
 #'
 #' @export
-ExtractMTX <- function(file_path){
-
+ExtractMTX <- function (file_path)
+{
   con <- file(file_path, "r")
-
   metadata_lines <- readLines(con, n = 20)
-
-  # Extract metadata lines containing '%metadata_json'
+  close(con)
   metadata_json <- gsub("^%", "", metadata_lines)
   metadata_json <- paste(metadata_json, collapse = "")
-  metadata_json <- regmatches(metadata_json, regexpr("\\{.*\\}", metadata_json))
-
-  # Convert JSON string to a list
+  metadata_json <- regmatches(metadata_json, regexpr("\\{.*\\}",
+                                                     metadata_json))
   metadata_list <- jsonlite::fromJSON(metadata_json)
-
-  # Close the connection
-  close(con)
-
+  c_num <- as.integer(strsplit(metadata_lines[which(grepl("}", metadata_lines)) + 1], " ")[[1]])
+  metadata_list$sampled_valid_n_genes <- c_num[1]
+  metadata_list$sampled_valid_n_cells <- c_num[2]
+  metadata_list$sampled_valid_n_Features <- c_num[3]
   return(metadata_list)
 }
