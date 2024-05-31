@@ -137,18 +137,20 @@ FastQDesign <-
     }
     ind_optimal_power <-
       ind_available_design %>% dplyr::arrange(dplyr::desc(power)) %>%
-      dplyr::slice_head() %>% dplyr::mutate(type = "power")
+      dplyr::slice_head() %>% dplyr::mutate(type = "similarity")
     ind_optimal_cost <-
       ind_available_design %>% dplyr::arrange(cost,
-                                              dplyr::desc(power)) %>% dplyr::slice_head() %>% dplyr::mutate(type = "cost")
+                                              dplyr::desc(power)) %>%
+      dplyr::slice_head() %>% dplyr::mutate(type = "cost")
     ind_optimal <- rbind(ind_optimal_power, ind_optimal_cost)
     colors_ind <-
       RColorBrewer::brewer.pal(n = length(flowcell_capacities) +
                                  3, name = "Set1")[seq_len(1 + length(flowcell_capacities))]
     names(colors_ind) <- c(converted_capacities, "Budget")
-    type_values <- c(power = 8, cost = 9)
+    type_values <- c(similarity = 8, cost = 9)
     p_design_ind <- ggplot2::ggplot(df_flow, ggplot2::aes(N,
-                                                          R)) + ggplot2::geom_point(shape = 21,
+                                                          R)) +
+      ggplot2::geom_point(shape = 21,
                                                                                     size = 3,
                                                                                     ggplot2::aes(fill = feasible)) +
       ggplot2::scale_fill_manual(
@@ -257,7 +259,7 @@ FastQDesign <-
     }
     share_optimal_power <-
       share_available_design %>% dplyr::arrange(dplyr::desc(power)) %>%
-      dplyr::slice_head() %>% dplyr::mutate(type = "power")
+      dplyr::slice_head() %>% dplyr::mutate(type = "similarity")
     share_optimal_cost <-
       share_available_design %>%
       dplyr::arrange(cost,
