@@ -151,8 +151,8 @@ FastQDesign <-
     p_design_ind <- ggplot2::ggplot(df_flow, ggplot2::aes(N,
                                                           R)) +
       ggplot2::geom_point(shape = 21,
-                                                                                    size = 3,
-                                                                                    ggplot2::aes(fill = feasible)) +
+                          size = 3,
+                          ggplot2::aes(fill = feasible)) +
       ggplot2::scale_fill_manual(
         values = c("grey30", "grey70"),
         breaks = c(TRUE, FALSE),
@@ -180,7 +180,7 @@ FastQDesign <-
       ) +
       ggplot2::labs(x = "Target number of cells", y = "Target reads per cell", fill = "Feasibility") +
       ggplot2::geom_point(
-        data = ind_optimal[!is.na(ind_optimal$N), ],
+        data = ind_optimal[!is.na(ind_optimal$N),],
         ggplot2::aes(N, R, shape = type),
         size = 4,
         color = "purple"
@@ -216,7 +216,7 @@ FastQDesign <-
         label = "Threshold",
         col = "red"
       ) + ggplot2::geom_point(
-        data = ind_optimal[!is.na(ind_optimal$N), ],
+        data = ind_optimal[!is.na(ind_optimal$N),],
         ggplot2::aes(cost, power, shape = type),
         size = 4,
         color = "purple"
