@@ -1,9 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
-
 # FastQDesign
 
 <!-- badges: start -->
@@ -19,6 +13,10 @@ You can install the development version of FastQDesign from [GitHub](https://git
 # install.packages("devtools")
 devtools::install_github("yuw444/FastQDesign")
 ```
+
+## fastF
+
+[fastF](https://github.com/yuw444/fastF) is a submodel of the FastQDesign framework, it is written in C for efficiency and broad compatibility. It helps generate pseudo-design datasets from the FastQ reference. 
 
 ## Prepare the Reference and Subsample
 
@@ -59,7 +57,7 @@ match_list <- SampleMatch(cb03_list, ds_list)
 
 ```
 
-In the above example, `aibm` is the reference Seurat object, `fastq_ds` is generated with the FastQ downsample by [fastF](https://github.com/yuw444/fastF)
+In the above example, `aibm` is the reference Seurat object, `fastq_ds` is generated with the FastQ downsample by [fastF](https://github.com/yuw444/fastF).
 
 
 ## Generate One Dot in the Similarity Surface
