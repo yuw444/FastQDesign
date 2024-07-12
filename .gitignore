@@ -6,7 +6,8 @@
 .httr-oauth
 .DS_Store
 *.rds
-AI/
-BM/
+data/AI/
+data/BM/
 *.pdf
 *.csv
+*.log
