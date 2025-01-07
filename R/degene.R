@@ -24,7 +24,7 @@ FindAllMarkersByCondition <- function(
   })
 
   # Find makers based on Idents
-  for (iter in 1:nlevels(Idents(seu))) {
+  for (iter in levels(Idents(seu))) {
     if (temp_qualifer[iter]) {
       markers_by_condition[[k]] <- Seurat::FindMarkers(seu,
         ident.1 = seu@meta.data[, condition][1],
