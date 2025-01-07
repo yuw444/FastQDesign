@@ -1,7 +1,3 @@
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
-
 #' Find Markers By Condition
 #'
 #' Find Differential Expressed(DE) markers by Condition
@@ -14,6 +10,7 @@ magrittr::`%>%`
 #' @param ... The argument could pass to \code{\link{FindMarkers}}
 #'
 #' @return A data frame includes DE markers
+#' @export
 FindAllMarkersByCondition <- function(
     seu,
     condition,
