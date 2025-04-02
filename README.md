@@ -3,7 +3,7 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of FastQDesign is to guide the investigator in designing a single-cell RNA sequencing(scRNA-seq) experiment. We aim to shift the focus back to raw FastQ reads other than the Unique Molecular Identifier (UMI) matrix when considering the scRNA-seq experiment. 
+The goal of FastQDesign is to guide the investigator in designing a single-cell RNA sequencing(scRNA-seq) experiment. We aim to shift the focus back to raw FastQ reads other than the Unique Molecular Identifier (UMI) matrix when considering the scRNA-seq experiment. The [paper](https://www.nature.com/articles/s42003-025-07938-8) is now open-access. 
 
 ## Installation
 
