@@ -41,6 +41,26 @@ set(UNITY_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/unity/unity.c
 )
 
+# Test: utils
+set(TEST_UTILS_SOURCES
+    ${CMAKE_SOURCE_DIR}/tests/c/test_utils.c
+    ${CMAKE_SOURCE_DIR}/src/filter.c
+    ${CMAKE_SOURCE_DIR}/src/utils.c
+    ${CMAKE_SOURCE_DIR}/src/bam2db.c
+    ${CMAKE_SOURCE_DIR}/src/hashtable.c
+    ${CMAKE_SOURCE_DIR}/src/mt19937ar.c
+    ${UNITY_SOURCES}
+)
+add_executable(test_utils ${TEST_UTILS_SOURCES})
+target_include_directories(test_utils PRIVATE 
+    ${CMAKE_SOURCE_DIR}/tests/unity
+    ${CMAKE_SOURCE_DIR}/tests/c
+    ${CMAKE_SOURCE_DIR}/src
+)
+target_link_libraries(test_utils z m hts sqlite3)
+add_test(NAME test_utils COMMAND test_utils
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests/c)
+
 # Test: filter
 set(TEST_FILTER_SOURCES
     ${CMAKE_SOURCE_DIR}/tests/c/test_filter.c
@@ -75,26 +95,6 @@ target_include_directories(test_bam2db PRIVATE
 )
 target_link_libraries(test_bam2db z m hts sqlite3)
 add_test(NAME test_bam2db COMMAND test_bam2db
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests/c)
-
-# Test: utils
-set(TEST_UTILS_SOURCES
-    ${CMAKE_SOURCE_DIR}/tests/c/test_utils.c
-    ${CMAKE_SOURCE_DIR}/src/filter.c
-    ${CMAKE_SOURCE_DIR}/src/utils.c
-    ${CMAKE_SOURCE_DIR}/src/bam2db.c
-    ${CMAKE_SOURCE_DIR}/src/hashtable.c
-    ${CMAKE_SOURCE_DIR}/src/mt19937ar.c
-    ${UNITY_SOURCES}
-)
-add_executable(test_utils ${TEST_UTILS_SOURCES})
-target_include_directories(test_utils PRIVATE 
-    ${CMAKE_SOURCE_DIR}/tests/unity
-    ${CMAKE_SOURCE_DIR}/tests/c
-    ${CMAKE_SOURCE_DIR}/src
-)
-target_link_libraries(test_utils z m hts sqlite3)
-add_test(NAME test_utils COMMAND test_utils
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/tests/c)
 
 # Test: integration

@@ -288,9 +288,9 @@ int cmd_bam2db(int argc, const char **argv)
     char *path_bam_arg = NULL;
     char *path_feature_arg = NULL;
     char *path_barcode_arg = NULL;
-    float rate_cell;
-    float rate_depth;
-    char *name_database_arg = NULL;
+    float rate_cell = 1.0f;
+    float rate_depth = 1.0f;
+    char *name_database_arg = ":memory:";
     char *path_out_arg = ".";
     unsigned int seed_arg = 926;
 

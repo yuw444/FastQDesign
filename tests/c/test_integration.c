@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
 
 #define DATA_PATH "/scratch/g/chlin/Yu/FastQDesign/data/"
 #define BUILD_PATH "/scratch/g/chlin/Yu/FastQDesign/build/"
@@ -18,27 +17,27 @@ void test_filter_command(void)
     
     int ret = system("cd " BUILD_PATH "test_filter_output && "
         "LD_LIBRARY_PATH=/hpc/apps/htslib/1.22.1/lib "
-        "../../fastF filter "
+        "../fastF filter "
         "-I " DATA_PATH "test_I1.fastq.gz "
         "-R " DATA_PATH "test_R1.fastq.gz "
         "-r " DATA_PATH "test_R2.fastq.gz "
         "-w " DATA_PATH "whitelist.txt "
         "-l 16 -t 0.1 -s 42");
     
-    TEST_ASSERT_TRUE(ret >= 0);
-    
-    system("rm -rf " BUILD_PATH "test_filter_output");
+    TEST_ASSERT_EQUAL(0, ret);
 }
 
 void test_freq_command(void)
 {
+    system("mkdir -p " BUILD_PATH "freq_output");
+    
     int ret = system("cd " BUILD_PATH " && "
         "LD_LIBRARY_PATH=/hpc/apps/htslib/1.22.1/lib "
         "./fastF freq "
         "-R " DATA_PATH "test_R1.fastq.gz "
-        "-l 16 -w " DATA_PATH "whitelist.txt");
+        "-l 16 -o " BUILD_PATH "freq_output/");
     
-    TEST_ASSERT_TRUE(ret >= 0);
+    TEST_ASSERT_EQUAL(0, ret);
 }
 
 void test_extract_command(void)
@@ -50,11 +49,32 @@ void test_extract_command(void)
         "-t CB");
     
     TEST_ASSERT_EQUAL(0, ret);
+}
+
+void test_crb_command(void)
+{
+    int ret = system("cd " BUILD_PATH " && "
+        "LD_LIBRARY_PATH=/hpc/apps/htslib/1.22.1/lib "
+        "./fastF crb "
+        "-b " DATA_PATH "test.bam "
+        "-o " BUILD_PATH "crb_output.tsv.gz");
     
-    struct stat st;
-    TEST_ASSERT_EQUAL(0, stat(BUILD_PATH "tag_summary.csv", &st));
+    TEST_ASSERT_EQUAL(0, ret);
+}
+
+void test_bam2db_command(void)
+{
+    system("mkdir -p " BUILD_PATH "bam2db_output");
     
-    system("rm -f " BUILD_PATH "tag_summary.csv");
+    int ret = system("cd " BUILD_PATH " && "
+        "LD_LIBRARY_PATH=/hpc/apps/htslib/1.22.1/lib "
+        "./fastF bam2db "
+        "-b " DATA_PATH "test.bam "
+        "-f " DATA_PATH "genes.tsv "
+        "-a " DATA_PATH "whitelist.txt "
+        "-o " BUILD_PATH "bam2db_output/");
+    
+    TEST_ASSERT_EQUAL(0, ret);
 }
 
 int main(void)
@@ -63,5 +83,7 @@ int main(void)
     RUN_TEST(test_filter_command);
     RUN_TEST(test_freq_command);
     RUN_TEST(test_extract_command);
+    RUN_TEST(test_crb_command);
+    RUN_TEST(test_bam2db_command);
     return UNITY_END();
 }
