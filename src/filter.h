@@ -14,13 +14,12 @@ It is designed to be run with multiple threads.
 #include <stdlib.h>
 #include <string.h>
 #include <zlib.h>
-#include <string.h>
 #include <stdbool.h>
 #include <time.h>
 #include <omp.h>
 
 #define BUFFER_LENGTH 1024
-#define LEN_WHITELIST 2 ^ 15
+#define LEN_WHITELIST (1 << 15)
 
 extern int flag;
 

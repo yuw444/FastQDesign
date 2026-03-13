@@ -2,9 +2,7 @@
 #include <sys/stat.h>
 #include "argparse.h"
 #include "filter.h"
-#include "count.h"
-#include "extract.h"
-#include "bam2db_ds.h"
+#include "bam2db.h"
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 

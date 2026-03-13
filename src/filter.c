@@ -8,6 +8,8 @@ It is designed to be run with multiple threads.
 
 */
 
+#define _POSIX_C_SOURCE 200809L
+
 #include "filter.h"
 
 int flag = 0;

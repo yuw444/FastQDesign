@@ -1,17 +1,12 @@
 #ifndef BAM2DB_H
 #define BAM2DB_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdint.h>
-#include <time.h>
 #include <htslib/sam.h>
 #include <zlib.h>
 #include <sqlite3.h>
 #include <sys/stat.h>
 #include "hashtable.h"
-#include "mt19937ar.h"
 #include "utils.h"
 
 #define MAX_LINE_LENGTH 1024
@@ -46,6 +41,8 @@ uint8_t *encode_DNA(const char *DNA_seq);
  * @return char* 
  */
 char *decode_DNA(uint8_t *encoded_DNA, size_t n);
+
+uint64_t hash(const char *str, size_t len);
 
 /**
  * @brief convert bam file to sql db file
