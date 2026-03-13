@@ -7,15 +7,15 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 
 static const char *const usages[] = {
-    "fastF <subcommands> [args]\n\n"
-    "subcommands:\n\n"\
-    "\tfreq:    Find all the cell barcode whitelist and their frequencies.\n"\
-    "\tfilter:  Filter fastq file using cell barcode whitelist and read depth.\n"\
-    "\tcrb:     Extract CR and CB tags from bam file and summarize them with \n"\
-    "\t             frequencies to a tsv file.\n"
-    "\tbam2db:  Filter bam file with desired cell proportion and read depth, \n"
-    "\t             then summarise it UMI matrix.\n"
-    "\textract: Extract the tag of bam file and write it to tag_summary.csv.\n",
+    "fastF <subcommand> [options]\n\n"
+    "Generate pseudo-design datasets from scRNA-seq FastQ/BAM references.\n\n"
+    "Subcommands:\n"
+    "\tfreq     Find cell barcode whitelist and frequencies from FastQ\n"
+    "\tfilter   Filter FastQ files using whitelist and read depth\n"
+    "\tcrb      Extract CR/CB tags from BAM and summarize to TSV\n"
+    "\tbam2db   Convert BAM to SQLite UMI matrix\n"
+    "\textract  Extract custom tags from BAM to CSV\n\n"
+    "Run 'fastF <subcommand> --help' for subcommand-specific options.\n",
     NULL,
 };
 
@@ -46,9 +46,9 @@ int cmd_freq(int argc, const char **argv)
     struct argparse argparse;
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(&argparse,
-                      "\nFind all the cell barcode whitelist and their frequencies.",
-                      "");
-
+                      "\nFind cell barcode whitelist and frequencies from FastQ files.",
+                      "\nOutput: Creates whitelist.txt with CB->count mapping.");
+    
     argc = argparse_parse(&argparse, argc, argv);
 
     if (path_R1_arg == NULL)
@@ -112,15 +112,15 @@ int cmd_filter(int argc, const char **argv)
         OPT_INTEGER('l', "len", &len_cellbarcode, "length of cell barcode", NULL, 0, 0),
         OPT_INTEGER('s', "seed", &seed_arg, "seed for random number generator", NULL, 0, 0),
         OPT_FLOAT('t', "rate", &rate_arg, "rate of reads to keep after matching cell barcodes", NULL, 0, 0),
-        OPT_BOOLEAN('a', "allcells", &all_cell, "keep all reads with cell barcode", NULL, 0, 0),
+        OPT_BOOLEAN('a', "allcells", &all_cell, "keep all cells in the fastq files, regardless of whitelist", NULL, 0, 0),
         OPT_END(),
     };
 
     struct argparse argparse;
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(&argparse,
-                      "\nFilter fastq file using cell barcode whitelist and read depth.",
-                      "");
+                      "\nFilter FastQ files using cell barcode whitelist and read depth.",
+                      "\nOutput: I1.fastq.gz, R1.fastq.gz, R2.fastq.gz (gzipped)");
 
     argc = argparse_parse(&argparse, argc, argv);
 
@@ -242,8 +242,8 @@ int cmd_crb(int argc, const char **argv)
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(
         &argparse,
-        "\nExtract CR and CB tags from bam file and summarize them with frequencies to a tsv file.",
-        "");
+        "\nExtract CR (correction) and CB (cell barcode) tags from BAM file.",
+        "\nOutput: TSV with CB->CR->count (for error correction analysis).");
 
     argc = argparse_parse(&argparse, argc, argv);
 
@@ -312,8 +312,8 @@ int cmd_bam2db(int argc, const char **argv)
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(
         &argparse,
-        "\nFilter bam file with desired cell proportion and read depth with sqlite3, then summarise it into UMI matrix.",
-        "");
+        "\nConvert BAM to SQLite UMI matrix for downstream analysis.",
+        "\nOutput: SQLite DB with gene x cell UMI counts, plus optional umi.tsv.gz");
 
     argc = argparse_parse(&argparse, argc, argv);
 
@@ -377,8 +377,8 @@ int cmd_extract(int argc, const char **argv)
     argparse_init(&argparse, options, usages, 0);
     argparse_describe(
         &argparse,
-        "\nExtract the tag of bam file.",
-        "\n");
+        "\nExtract custom tags from BAM file to CSV.",
+        "\nOutput: tag_summary.csv with tag frequencies.");
 
     argc = argparse_parse(&argparse, argc, argv);
 
