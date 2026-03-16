@@ -1,0 +1,31 @@
+{
+    "terminal.integrated.env.linux": {
+        "PATH": "${env:PATH}:/home/yu89975/.local/bin:/opt/slurm/bin/",
+        "LD_LIBRARY_PATH": "/opt/slurm/lib64/:${env:LD_LIBRARY_PATH}",
+        "R_HOME": "/home/yu89975/micromamba/envs/exonBlock/lib/R"
+    },
+    "r.rpath.linux": "/home/yu89975/micromamba/envs/exonBlock/bin/R",
+    "r.rterm.linux": "/home/yu89975/micromamba/envs/exonBlock/bin/radian",
+    "r.rterm.option": [
+        "--no-save",
+        "--no-restore"
+    ],
+    "r.plot.useHttpgd": true,
+    "r.libPaths": [
+        // "/home/yu89975/R/x86_64-pc-linux-gnu-library/4.5.0",
+        // "/scratch/g/chlin/Yu/CD137/src/Impute/lib/"
+        // "/hpc/apps/R/4.3.3/lib64/R/library"
+        "/home/yu89975/micromamba/envs/exonBlock/lib/R/library"
+    ],
+    "r.bracketedPaste": true,
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc",
+    "C_Cpp.default.includePath": [
+        "/usr/include",
+        "/usr/local/include",
+        "/usr/include/c++/11",
+        "/usr/lib/gcc/x86_64-linux-gnu/11/include",
+        "/hpc/apps/R/4.5.0/lib64/R/include",
+        "/hpc/apps/htslib/1.22.1/include",
+        "${workspaceFolder}/**"
+    ],
+}

@@ -1,0 +1,43 @@
+# FastQDesign package compilation for fastF
+# Compiles the fastF binary and installs to inst/bin/
+
+PKG_CFLAGS=-O2 -Wall -std=c99 -D_POSIX_C_SOURCE=200809L -fopenmp
+
+# Detect htslib - try pkg-config first, then common paths
+HTSLIB_PC:=$(shell pkg-config --cflags --libs htslib 2>/dev/null)
+
+# Try to find htslib in common locations
+FIND_HTSLIB=$(shell \
+  if [ -n "$(HTSLIB_PC)" ]; then \
+    echo "$(HTSLIB_PC)"; \
+  elif [ -f /hpc/apps/htslib/1.22.1/include/htslib/sam.h ]; then \
+    echo "-I/hpc/apps/htslib/1.22.1/include -L/hpc/apps/htslib/1.22.1/lib -Wl,-rpath,/hpc/apps/htslib/1.22.1/lib -lhts"; \
+  elif [ -f /usr/local/include/htslib/sam.h ]; then \
+    echo "-I/usr/local/include -L/usr/local/lib -lhts"; \
+  else \
+    echo "-lhts"; \
+  fi)
+
+PKG_CPPFLAGS:=$(shell echo "$(FIND_HTSLIB)" | sed 's/ -lhts.*//')
+PKG_LIBS=-lpthread -lz -lsqlite3 $(FIND_HTSLIB)
+
+# Source files for fastF
+SOURCES=main.c argparse.c mt19937ar.c hashtable.c filter.c bam2db.c utils.c
+
+# Output binary
+TARGET=fastF
+
+# Install to inst/bin/
+INSTBIN=$(DESTDIR)$(R_PACKAGE_DIR)/inst/bin
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCES)
+	$(CC) $(PKG_CFLAGS) $(PKG_CPPFLAGS) $(SOURCES) $(PKG_LIBS) -o $(TARGET)
+
+install: $(TARGET)
+	@mkdir -p $(INSTBIN)
+	cp $(TARGET) $(INSTBIN)/
+
+clean:
+	rm -f $(TARGET)

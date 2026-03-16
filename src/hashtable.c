@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include "hashtable.h"
 
 static size_t hash_table_index(hash_table *ht, const char *key)

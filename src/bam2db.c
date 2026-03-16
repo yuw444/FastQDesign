@@ -120,7 +120,6 @@ int bam2db(
     sqlite3_stmt *stmt;
 
     init_genrand(seed);
-    double rand_cell;
     double rand_depth;
 
     // open database
@@ -654,7 +653,6 @@ size_t nrow_sql_table(
     sqlite3 *db_handle,
     const char *table_name)
 {
-    char *err_msg = NULL;
     int rc;
     sqlite3_stmt *stmt;
 

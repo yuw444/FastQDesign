@@ -223,7 +223,6 @@ char **read_txt(char *file_name, size_t nrows)
     }
 
     char **whitelist = (char **)malloc(nrows * sizeof(char *));
-    int i = 0;
 
     for (int i = 0; i < nrows; i++)
     {

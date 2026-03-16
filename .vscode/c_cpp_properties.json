@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "name": "R/C - exonBlocks",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "/hpc/apps/R/4.5.0/lib64/R/include",
+        "/usr/share/R/include",
+        "/hpc/apps/htslib/1.22.1/include"
+      ],
+      "defines": [
+        "__STDC__",
+        "__STDC_VERSION__=201710L"
+      ],
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "c11",
+      "intelliSenseMode": "linux-clang"
+    }
+  ],
+  "version": 4
+}

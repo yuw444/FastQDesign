@@ -82,7 +82,7 @@ void PrintArrayInt(size_t *array, size_t n)
 {
   for (size_t i = 0; i < n; i++)
   {
-    printf("%d ", array[i]);
+    printf("%zu ", array[i]);
   }
   printf("\n");
 }
@@ -267,7 +267,7 @@ void extract_bam(char *bam_file, const char *tag, int type)
                 root = insert_tree(root, bam_aux2Z(tag_ptr));
                 break;
             case 1:
-                sprintf(tag_str, "%d", bam_aux2i(tag_ptr));
+                sprintf(tag_str, "%ld", (long)bam_aux2i(tag_ptr));
                 root = insert_tree(root, tag_str);
                 free(tag_str);
                 break;

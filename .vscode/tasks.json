@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "R: Install Package",
+      "type": "shell",
+      "command": "R CMD INSTALL .",
+      "problemMatcher": ["$gcc"],
+      "group": "build",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "R: Run Tests",
+      "type": "shell", 
+      "command": "R -e 'devtools::test()'",
+      "problemMatcher": ["$gcc"],
+      "group": "test",
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "R: Generate Docs",
+      "type": "shell",
+      "command": "R -e 'devtools::document()'",
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "R: Check Package",
+      "type": "shell",
+      "command": "R CMD check .",
+      "problemMatcher": ["$gcc"],
+      "presentation": {
+        "reveal": "always"
+      }
+    },
+    {
+      "label": "C: Compile with clangd",
+      "type": "shell",
+      "command": "clangd check src/*.c --",
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}
