@@ -20,5 +20,5 @@ Depends:
     R (>= 2.10)
 SystemRequirements: 
     htslib (>= 1.10), zlib, libpthread-stubs, sqlite3
-URL: https://github.com/yuw444/FastQDesign
+URL: https://github.com/yuw444/FastQDesign, https://yuw444.github.io/FastQDesign/
 BugReports: https://github.com/yuw444/FastQDesign/issues
