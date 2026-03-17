@@ -46,9 +46,15 @@ reference:
       - fastF_extract
 
 articles:
-  - title: Documentation
+  - title: Getting Started
     contents:
-      - tests
+      - experiment-design
+  - title: fastF Tool
+    contents:
+      - fastF-tool
+  - title: Sample Analysis
+    contents:
+      - sample-prep
 
 development:
   mode: auto

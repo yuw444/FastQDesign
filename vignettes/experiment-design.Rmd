@@ -1,0 +1,77 @@
+---
+title: "Experiment Design with FastQDesign"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Experiment Design with FastQDesign}
+  %\VignetteEngine{rmarkdown::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+FastQDesign helps investigators plan scRNA-seq experiments by optimizing the number of cells and sequencing depth given a budget constraint.
+
+## Basic Usage
+
+```{r eval=FALSE}
+library(FastQDesign)
+
+# Load power analysis data from literature
+df_power <- read.csv(system.file("data", "AIBM_power.csv", package = "FastQDesign"))
+
+# Define experiment parameters
+budget <- 7500  # Total budget in USD
+power_threshold <- 0.7  # Statistical power target
+flowcell_capacities <- c(10^7, 5 * 10^7, 2 * 10^8)  # Reads per flowcell
+flowcell_costs <- c(1000, 2000, 3000)  # Cost per flowcell
+library_costs <- 5000  # Library preparation cost
+
+# Run experiment design
+rst <- FastQDesign(
+  df_power = df_power,
+  budget = budget,
+  power_threshold = power_threshold,
+  flowcell_capacities = flowcell_capacities,
+  flowcell_costs = flowcell_costs,
+  library_costs = library_costs,
+  reads_valid_rate = 0.9
+)
+```
+
+## Output
+
+The `FastQDesign()` function returns a list containing:
+
+- **$p_ind**: Individual sample design plot
+- **$p_share**: Shared sample design plot  
+- **$design**: Design results table
+
+## Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| `df_power` | DataFrame with n_cells, expected_reads_per_cell, power columns |
+| `budget` | Total experiment budget |
+| `power_threshold` | Target statistical power |
+| `flowcell_capacities` | Vector of flowcell read capacities |
+| `flowcell_costs` | Vector of flowcell costs |
+| `library_costs` | Library preparation cost |
+| `reads_valid_rate` | Expected valid reads rate |
+
+## Plotting
+
+Save the generated plots:
+
+```{r eval=FALSE}
+# Save individual plot
+ggsave("design_individual.pdf", rst$p_ind, width = 8, height = 6)
+
+# Save combined plot
+combined <- patchwork::wrap_plots(rst$p_ind, rst$p_share, ncol = 1)
+ggsave("design_combined.pdf", combined, width = 10, height = 10)
+```
