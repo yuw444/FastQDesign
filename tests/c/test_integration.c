@@ -70,8 +70,8 @@ void test_bam2db_command(void)
         "LD_LIBRARY_PATH=/hpc/apps/htslib/1.22.1/lib "
         "./fastF bam2db "
         "-b " DATA_PATH "test.bam "
-        "-f " DATA_PATH "genes.tsv "
-        "-a " DATA_PATH "whitelist.txt "
+        "-f " DATA_PATH "features.tsv.gz "
+        "-a " DATA_PATH "barcodes.tsv.gz "
         "-o " BUILD_PATH "bam2db_output/");
     
     TEST_ASSERT_EQUAL(0, ret);

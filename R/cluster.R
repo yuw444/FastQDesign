@@ -8,14 +8,16 @@
 #'
 #' @export
 
-FixedNumClusters <- function(seu,
-                             n_clusters,
-                             verbose = FALSE) {
+FixedNumClusters <- function(seu, n_clusters, verbose = FALSE) {
   res_ <- uniroot(
     function(res) {
-      nlevels(FindClusters(seu, resolution = res, verbose = verbose)$seurat_clusters) - n_clusters
+      nlevels(
+        FindClusters(seu, resolution = res, verbose = verbose)$seurat_clusters
+      ) -
+        n_clusters
     },
-    interval = c(0, 4), extendInt = "yes"
+    interval = c(0, 4),
+    extendInt = "yes"
   )$root
 
   seu <- FindClusters(seu, resolution = res_, verbose = verbose)
@@ -37,14 +39,15 @@ FixedNumClusters <- function(seu,
 #' @export
 
 OptimalNumClusters <- function(
-    seu,
-    reduction = c("pca", "umap")
-){
-
-  assertthat::assert_that(any(class(seu) == "Seurat"), msg = "Please make sure seu is an Seurat object")
+  seu,
+  reduction = c("pca", "umap")
+) {
+  assertthat::assert_that(
+    any(class(seu) == "Seurat"),
+    msg = "Please make sure seu is an Seurat object"
+  )
   cell_embeddings <- Seurat::Embeddings(seu, reduction = reduction)
-  if(reduction == "pca")
-  {
+  if (reduction == "pca") {
     save_commands <- Seurat::Command(seu)
     which_pca <- which(sapply(save_commands, function(x) grepl(".pca", x)))[1]
     dims <- Seurat::Command(seu, command = save_commands[which_pca], "dims")
@@ -52,5 +55,4 @@ OptimalNumClusters <- function(
   }
 
   return(fpc::prediction.strength(cell_embeddings))
-
 }

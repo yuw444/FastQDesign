@@ -1,8 +1,9 @@
 {
     "terminal.integrated.env.linux": {
-        "PATH": "${env:PATH}:/home/yu89975/.local/bin:/opt/slurm/bin/",
-        "LD_LIBRARY_PATH": "/opt/slurm/lib64/:${env:LD_LIBRARY_PATH}",
-        "R_HOME": "/home/yu89975/micromamba/envs/exonBlock/lib/R"
+        "PATH": "${env:PATH}:/home/yu89975/.local/bin:/opt/slurm/bin/:/home/yu89975/micromamba/envs/exonBlock/bin",
+        "LD_LIBRARY_PATH": "/home/yu89975/micromamba/envs/exonBlock/lib:/home/yu89975/micromamba/envs/exonBlock/lib64:/opt/slurm/lib64/:${env:LD_LIBRARY_PATH}",
+        "R_HOME": "/home/yu89975/micromamba/envs/exonBlock/lib/R",
+        "CMAKE_PREFIX_PATH": "/home/yu89975/micromamba/envs/exonBlock"
     },
     "r.rpath.linux": "/home/yu89975/micromamba/envs/exonBlock/bin/R",
     "r.rterm.linux": "/home/yu89975/micromamba/envs/exonBlock/bin/radian",

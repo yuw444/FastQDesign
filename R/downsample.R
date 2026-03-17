@@ -16,13 +16,15 @@
 #'
 #' @export
 
-DownSample <- function(seu,
-                       rate_cells = 0.3,
-                       rate_umis = 0.3,
-                       seed = 926,
-                       enable_PCR = FALSE,
-                       nb_size = 2,
-                       nb_prob = 0.2) {
+DownSample <- function(
+  seu,
+  rate_cells = 0.3,
+  rate_umis = 0.3,
+  seed = 926,
+  enable_PCR = FALSE,
+  nb_size = 2,
+  nb_prob = 0.2
+) {
   set.seed(seed * 1000 + rate_cells * 100 + rate_umis * 10)
 
   n_obs <- ncol(seu)
@@ -34,16 +36,21 @@ DownSample <- function(seu,
     umis <- seu@assays[["RNA"]]@counts@x
     n_umis <- length(umis)
     if (enable_PCR) {
-      cat("Enabling copy number variation of each UMI...\nDownsampling Starting...\n")
-      pb <- txtProgressBar(min = 1,
-                           max = n_umis,
-                           style = 3)
+      cat(
+        "Enabling copy number variation of each UMI...\nDownsampling Starting...\n"
+      )
+      pb <- txtProgressBar(min = 1, max = n_umis, style = 3)
       umis_new <- sapply(1:n_umis, function(x) {
         umis_copy_number <- rnbinom(umis[x], nb_size, nb_prob)
         setTxtProgressBar(pb, x)
-        return(sum(rbinom(
-          umis[x], umis_copy_number, rate_umis
-        ) != 0))
+        return(sum(
+          rbinom(
+            umis[x],
+            umis_copy_number,
+            rate_umis
+          ) !=
+            0
+        ))
       })
       cat("\n")
     } else {
@@ -62,16 +69,21 @@ DownSample <- function(seu,
     umis <- temp@assays[["RNA"]]@counts@x
     n_umis <- length(umis)
     if (enable_PCR) {
-      cat("Enabling copy number variation of each UMI...\nDownsampling Starting...\n")
-      pb <- txtProgressBar(min = 1,
-                           max = n_umis,
-                           style = 3)
+      cat(
+        "Enabling copy number variation of each UMI...\nDownsampling Starting...\n"
+      )
+      pb <- txtProgressBar(min = 1, max = n_umis, style = 3)
       umis_new <- sapply(1:n_umis, function(x) {
         umis_copy_number <- rnbinom(umis[x], nb_size, nb_prob)
         setTxtProgressBar(pb, x)
-        return(sum(rbinom(
-          umis[x], umis_copy_number, rate_umis
-        ) != 0))
+        return(sum(
+          rbinom(
+            umis[x],
+            umis_copy_number,
+            rate_umis
+          ) !=
+            0
+        ))
       })
       cat("\n")
     } else {
@@ -116,41 +128,45 @@ DownSample <- function(seu,
 #'
 #' @export
 #'
-SamplePrep <- function(seu,
-                       cluster_id = NA,
-                       n_clusters = NA,
-                       use_default_res = TRUE,
-                       condition = NA,
-                       cell_3d_embedding = FALSE,
-                       pca_used = 1:30,
-                       vars_to_regress = NULL,
-                       use_partition = FALSE,
-                       close_loop = FALSE,
-                       learn_graph_control = NULL,
-                       interactive = FALSE,
-                       root_cells_ref = NA,
-                       verbose = FALSE,
-                       ...) {
-
-  if(!is.na(cluster_id) & (!is.na(n_clusters) | use_default_res))
-  {
-    warning("only applied `cluster_id`, and ignored `n_clusters` and `use_default_res.`\n")
+SamplePrep <- function(
+  seu,
+  cluster_id = NA,
+  n_clusters = NA,
+  use_default_res = TRUE,
+  condition = NA,
+  cell_3d_embedding = FALSE,
+  pca_used = 1:30,
+  vars_to_regress = NULL,
+  use_partition = FALSE,
+  close_loop = FALSE,
+  learn_graph_control = NULL,
+  interactive = FALSE,
+  root_cells_ref = NA,
+  verbose = FALSE,
+  ...
+) {
+  if (!is.na(cluster_id) & (!is.na(n_clusters) | use_default_res)) {
+    warning(
+      "only applied `cluster_id`, and ignored `n_clusters` and `use_default_res.`\n"
+    )
     n_clusters <- NA
     use_default_res <- FALSE
   }
 
-  if (!is.na(n_clusters) | use_default_res)
-  {
-    cat("\n###When n_cluster is specified, SCTransform is applied automatically!\n")
-    seu <- Seurat::SCTransform(object = seu,
-                               method = "glmGamPoi",
-                               vars.to.regress = vars_to_regress,
-                               verbose = verbose)
+  if (!is.na(n_clusters) | use_default_res) {
+    cat(
+      "\n###When n_cluster is specified, SCTransform is applied automatically!\n"
+    )
+    seu <- Seurat::SCTransform(
+      object = seu,
+      method = "glmGamPoi",
+      vars.to.regress = vars_to_regress,
+      verbose = verbose
+    )
     seu <- Seurat::RunPCA(seu, verbose = verbose)
     seu <- Seurat::FindNeighbors(seu, dims = pca_used, verbose = verbose)
-    if (!is.na(n_clusters))
-    {
-      if(use_default_res){
+    if (!is.na(n_clusters)) {
+      if (use_default_res) {
         warning("Ignored `use_default_res.`\n")
       }
       cat("\n###Finding the desired number of clusters ...\n")
@@ -179,8 +195,9 @@ SamplePrep <- function(seu,
   }
 
   cat("\n### Finding all cluster markers ....\n")
-  if(!is.na(cluster_id))
+  if (!is.na(cluster_id)) {
     Idents(seu) <- cluster_id
+  }
 
   df_marker_cluster <- Seurat::FindAllMarkers(seu, ...)
 
@@ -188,9 +205,11 @@ SamplePrep <- function(seu,
 
   if (!is.na(condition)) {
     cat("\n### Finding all condition markers ....\n")
-    df_marker_condition <- FindAllMarkersByCondition(seu,
-                                                     condition = condition,
-                                                     ...)
+    df_marker_condition <- FindAllMarkersByCondition(
+      seu,
+      condition = condition,
+      ...
+    )
   }
 
   seu$umap_1 <- seu$umap_2 <- seu$umap_3 <- NA
@@ -198,10 +217,7 @@ SamplePrep <- function(seu,
     cat("\n### Finding the cells 3d embeddings ....\n")
     suppressWarnings({
       temp <-
-        Seurat::RunUMAP(seu,
-                        dims = pca_used,
-                        n.components = 3,
-                        verbose = FALSE)
+        Seurat::RunUMAP(seu, dims = pca_used, n.components = 3, verbose = FALSE)
       umap3 <- Seurat::Embeddings(temp, "umap")
     })
     seu$umap_1 <- umap3[, 1]
@@ -231,22 +247,28 @@ SamplePrep <- function(seu,
 #'
 #' @return List of matched features
 #' @export
-SampleMatch <- function(reference_list,
-                        downsample_list,
-                        ...) {
-  df_cluster_ref <- data.frame(Id = Cells(reference_list$Seurat),
-                               reference_list$Seurat@meta.data[, c("seurat_clusters",
-                                                                   "pseudotime",
-                                                                   "umap_1",
-                                                                   "umap_2",
-                                                                   "umap_3")])
+SampleMatch <- function(reference_list, downsample_list, ...) {
+  df_cluster_ref <- data.frame(
+    Id = Cells(reference_list$Seurat),
+    reference_list$Seurat@meta.data[, c(
+      "seurat_clusters",
+      "pseudotime",
+      "umap_1",
+      "umap_2",
+      "umap_3"
+    )]
+  )
 
-  df_cluster_ds <- data.frame(Id = Cells(downsample_list$Seurat),
-                              downsample_list$Seurat@meta.data[, c("seurat_clusters",
-                                                                   "pseudotime",
-                                                                   "umap_1",
-                                                                   "umap_2",
-                                                                   "umap_3")])
+  df_cluster_ds <- data.frame(
+    Id = Cells(downsample_list$Seurat),
+    downsample_list$Seurat@meta.data[, c(
+      "seurat_clusters",
+      "pseudotime",
+      "umap_1",
+      "umap_2",
+      "umap_3"
+    )]
+  )
 
   df_cluster_match <- df_cluster_ds %>%
     dplyr::left_join(., df_cluster_ref, by = c("Id" = "Id"))
@@ -257,9 +279,10 @@ SampleMatch <- function(reference_list,
     MarkerGeneFilter(downsample_list$MarkersByCluster, ...)
 
   genes_condition_ref <- genes_condition_ds <- NA
-  if (!is.null(reference_list$MarkersByCondition) &
-      !is.null(downsample_list$MarkersByCondition))
-  {
+  if (
+    !is.null(reference_list$MarkersByCondition) &
+      !is.null(downsample_list$MarkersByCondition)
+  ) {
     genes_condition_ref <-
       MarkerGeneFilter(reference_list$MarkersByCondition, ...)
     genes_condition_ds <-
@@ -269,13 +292,8 @@ SampleMatch <- function(reference_list,
   return(
     list(
       cluster_match = df_cluster_match,
-      genes_cluster = list(ref = genes_cluster_ref,
-                           ds = genes_cluster_ds),
-      genes_condition = list(ref = genes_condition_ref,
-                             ds = genes_condition_ds)
-
+      genes_cluster = list(ref = genes_cluster_ref, ds = genes_cluster_ds),
+      genes_condition = list(ref = genes_condition_ref, ds = genes_condition_ds)
     )
   )
 }
-
-

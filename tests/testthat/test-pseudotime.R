@@ -1,18 +1,37 @@
 test_that("interactive", {
-
   library(monocle3)
   library(Seurat)
 
-  bam_ds <- readRDS("~/Documents/Research/FastQDesign/bam_downsample_list.rds")[[1]]
+  ref_list <- readRDS(
+    "/scratch/g/chlin/Yu/FastQDesign/data/reference_list.rds"
+  )
 
-  temp <- FindPseudotime(bam_ds, root_cells_ref = Cells(cb03_list[[1]])[cb03_list[[1]]$root_cells])
+  bam_ds <- readRDS(
+    "/scratch/g/chlin/Yu/FastQDesign/data/bam_downsample_list.rds"
+  )[[1]]
 
-  temp <- FindPseudotime(bam_ds)
+  root_cells <- c(
+    names(ref_list$dfPsedutimeCd4$pseudotime)[
+      ref_list$dfPsedutimeCd4$root_cells
+    ],
+    names(ref_list$dfPsedutimeCd8$pseudotime)[
+      ref_list$dfPsedutimeCd8$root_cells
+    ]
+  )
 
-  cb03_list <- readRDS("~/Documents/Research/FastQDesign/reference_list.rds")
+  temp <- FindPseudotime(
+    bam_ds,
+    root_cells_ref = root_cells
+  )
 
-  cb03_cds <- FindPseudotime(cb03_list[[1]], interactive = TRUE, use_partition = TRUE)
+  # temp <- FindPseudotime(bam_ds)
+
+  cb03_cds <- FindPseudotime(
+    ref_list[[1]],
+    interactive = FALSE,
+    root_cells_ref = root_cells,
+    use_partition = TRUE
+  )
 
   plot_cells(cb03_cds, color_cells_by = "pseudotime")
-
 })

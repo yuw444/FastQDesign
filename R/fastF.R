@@ -2,8 +2,16 @@
 "_PACKAGE"
 
 get_fastF_bin <- function() {
+  # First check in build directory (for development)
+  dev_bin <- "/scratch/g/chlin/Yu/FastQDesign/build/fastF"
+  if (file.exists(dev_bin)) {
+    return(dev_bin)
+  }
+  
+  # Then check system PATH
   bin <- Sys.which("fastF")
   if (bin == "") {
+    # Finally check package inst/bin
     bin <- system.file("bin", "fastF", package = "FastQDesign")
     if (bin == "") {
       stop("fastF binary not found. Please reinstall FastQDesign package.")
@@ -14,33 +22,26 @@ get_fastF_bin <- function() {
 
 get_htslib_path <- function() {
   # Try to find htslib via multiple methods
-  # 1. Check if it's in standard system paths
+  # 1. Try pkg-config if available (suppress warnings)
+  pc_path <- ""
+  if (Sys.which("pkg-config") != "") {
+    pc_path <- tryCatch({
+      suppressWarnings(system("pkg-config --variable=libdir htslib", intern = TRUE))
+    }, error = function(e) "")
+  }
+  
+  # 2. Check common htslib locations
   std_paths <- c(
+    "/hpc/apps/htslib/1.22.1/lib",
     "/usr/lib", "/usr/local/lib",
     "/usr/lib64", "/usr/local/lib64",
     "/opt/htslib/lib", "/opt/lib"
   )
   
-  # 2. Try ldconfig if available
-  ld_path <- ""
-  if (Sys.which("ldconfig") != "") {
-    ld_path <- tryCatch({
-      system("ldconfig -p | grep libhts", intern = TRUE)
-    }, error = function(e) "")
-  }
-  
-  # 3. Try pkg-config if available
-  pc_path <- ""
-  if (Sys.which("pkg-config") != "") {
-    pc_path <- tryCatch({
-      system("pkg-config --variable=libdir htslib", intern = TRUE)
-    }, error = function(e) "")
-  }
-  
   # Use first valid path found
-  paths <- c(pc_path, ld_path, std_paths)
+  paths <- c(pc_path, std_paths)
   for (p in paths) {
-    if (nzchar(p) && dir.exists(p)) {
+    if (nzchar(p) && dir.exists(p) && file.exists(file.path(p, "libhts.so"))) {
       return(p)
     }
   }
@@ -52,15 +53,20 @@ get_htslib_path <- function() {
 run_fastF <- function(args, must_succeed = TRUE) {
   bin <- get_fastF_bin()
   
-  # Build environment
-  env <- NULL
+  # Build environment - use system() for better control
   htslib <- get_htslib_path()
-  if (!is.null(htslib)) {
-    env <- c(LD_LIBRARY_PATH = htslib)
-  }
   
-  result <- system2(bin, args, env = env, stdout = TRUE, stderr = TRUE)
-  status <- attr(result, "status")
+  if (!is.null(htslib)) {
+    # Use system() with explicit LD_LIBRARY_PATH
+    cmd <- sprintf("LD_LIBRARY_PATH=%s %s %s", htslib, bin, paste(args, collapse = " "))
+    result <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
+    status <- attr(result, "status")
+  } else {
+    # No htslib path, just run directly
+    cmd <- sprintf("%s %s", bin, paste(args, collapse = " "))
+    result <- system(cmd, intern = TRUE, ignore.stderr = FALSE)
+    status <- attr(result, "status")
+  }
   
   if (must_succeed && !is.null(status) && status != 0) {
     stop(paste(result, collapse = "\n"))

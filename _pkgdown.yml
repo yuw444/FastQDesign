@@ -1,0 +1,54 @@
+url: https://github.com/yuw444/FastQDesign
+title: FastQDesign
+
+template:
+  bootstrap: 5
+  bslib:
+    primary_color: "#1f77b4"
+
+home:
+  title: FastQDesign
+  description: >
+    Guide investigators in designing scRNA-seq experiments by shifting focus 
+    from UMI matrix back to raw FastQ reads.
+  links:
+    - text: GitHub
+      href: https://github.com/yuw444/FastQDesign
+    - text: Paper
+      href: https://www.nature.com/articles/s42003-025-07938-8
+
+reference:
+  - title: Main Functions
+    contents:
+      - FastQDesign
+      - SamplePrep
+      - SampleMatch
+      - DownSample
+      - FindPseudotime
+  - title: Analysis Utilities
+    contents:
+      - ConditionalShannonEntropy
+      - Entropy
+      - ExtractMTX
+      - FindAllMarkersByCondition
+      - FixedNumClusters
+      - JaccardIndex
+      - MarkerGeneFilter
+      - OptimalNumClusters
+      - PPV
+      - RootNodeSelect
+  - title: fastF Subcommands
+    contents:
+      - fastF_freq
+      - fastF_filter
+      - fastF_crb
+      - fastF_bam2db
+      - fastF_extract
+
+articles:
+  - title: Documentation
+    contents:
+      - tests
+
+development:
+  mode: auto

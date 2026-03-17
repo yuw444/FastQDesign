@@ -227,7 +227,21 @@ char **read_txt(char *file_name, size_t nrows)
     for (int i = 0; i < nrows; i++)
     {
         whitelist[i] = (char *)malloc(100 * sizeof(char));
-        fgets(whitelist[i], 100, stream);
+                char *ret = fgets(whitelist[i], 100, stream);
+        if (ret == NULL)
+        {
+            /* EOF or error: set empty string to avoid using uninitialized data */
+            whitelist[i][0] = '\0';
+        }
+        else
+        {
+            /* remove trailing newline if present */
+            size_t len = strlen(whitelist[i]);
+            if (len > 0 && whitelist[i][len - 1] == '\n')
+            {
+                whitelist[i][len - 1] = '\0';
+            }
+        }
     }
 
     fclose(stream);

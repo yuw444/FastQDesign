@@ -1,0 +1,253 @@
+#!/bin/bash
+# Configure script for FastQDesign R package
+# Builds fastF binary during R CMD INSTALL or devtools::install()
+# Search order: LD_LIBRARY_PATH -> pkg-config -> common paths
+
+set -e
+
+# Find R from micromamba environment if not in PATH
+if ! command -v cmake &> /dev/null; then
+    R_LIB_BIN=$(R --quiet --no-save -e 'cat(dirname(R.home()), "/bin", sep="")' 2>/dev/null | tr -d ' ')
+    if [ -d "$R_LIB_BIN" ]; then
+        export PATH="$R_LIB_BIN:$PATH"
+    fi
+fi
+
+echo "=== Building fastF binary ==="
+
+# Get package root directory
+PKG_ROOT="$(cd "$(dirname "$0")" && pwd)"
+BUILD_DIR="$PKG_ROOT/build"
+CMAKE_DIR="$PKG_ROOT"
+INST_BIN="$PKG_ROOT/inst/bin"
+
+# Create directories
+mkdir -p "$BUILD_DIR"
+mkdir -p "$INST_BIN"
+
+# Helper function to find library in LD_LIBRARY_PATH
+find_in_ld_path() {
+    local lib_name="$1"
+    local ld_path="$LD_LIBRARY_PATH"
+    [ -z "$ld_path" ] && ld_path="/lib:/lib64:/usr/lib:/usr/local/lib"
+    
+    IFS=':' read -ra PATHS <<< "$ld_path"
+    for path in "${PATHS[@]}"; do
+        if [ -f "$path/lib${lib_name}.so" ] || [ -f "$path/lib${lib_name}.a" ]; then
+            echo "$path"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Initialize flags
+CFLAGS=""
+LDFLAGS=""
+LIBS=""
+
+# 1. Find htslib
+# Priority: LD_LIBRARY_PATH -> pkg-config -> common paths
+HTSLIB_FOUND=false
+HTSLIB_PATH=""
+
+# Check LD_LIBRARY_PATH first
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    for path in $(echo "$LD_LIBRARY_PATH" | tr ':' ' '); do
+        if [ -f "$path/libhts.so" ] || [ -f "$path/libhts.a" ]; then
+            HTSLIB_PATH=$(dirname "$path")
+            break
+        fi
+    done
+fi
+
+# Fallback: check common paths
+if [ -z "$HTSLIB_PATH" ]; then
+    for path in /hpc/apps/htslib/1.22.1 /usr /usr/local /opt/htslib; do
+        if [ -f "$path/lib/libhts.so" ] || [ -f "$path/lib/libhts.a" ]; then
+            HTSLIB_PATH="$path/lib"
+            break
+        fi
+    done
+fi
+
+# Try pkg-config as last resort
+if [ -z "$HTSLIB_PATH" ] && pkg-config --exists htslib 2>/dev/null; then
+    HTSLIB_CFLAGS=$(pkg-config --cflags htslib 2>/dev/null || echo "")
+    HTSLIB_LIBS=$(pkg-config --libs htslib 2>/dev/null || echo "")
+    HTSLIB_LIBDIR=$(pkg-config --variable=libdir htslib 2>/dev/null || echo "")
+    CFLAGS="$CFLAGS $HTSLIB_CFLAGS"
+    LDFLAGS="$LDFLAGS -L$HTSLIB_LIBDIR"
+    LIBS="$LIBS $HTSLIB_LIBS"
+    HTSLIB_FOUND=true
+    echo "Found htslib via pkg-config: $HTSLIB_LIBDIR"
+fi
+
+if [ -n "$HTSLIB_PATH" ]; then
+    HTSLIB_INCLUDE=$(dirname "$HTSLIB_PATH")/include
+    CFLAGS="$CFLAGS -I$HTSLIB_INCLUDE"
+    LDFLAGS="$LDFLAGS -L$HTSLIB_PATH"
+    LIBS="$LIBS -lhts"
+    HTSLIB_FOUND=true
+    echo "Found htslib via LD_LIBRARY_PATH: $HTSLIB_PATH"
+fi
+
+if [ "$HTSLIB_FOUND" = false ]; then
+    echo "ERROR: htslib not found. Please install it."
+    exit 1
+fi
+
+# 2. Find zlib
+# Priority: LD_LIBRARY_PATH -> pkg-config -> fallback
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    for path in $(echo "$LD_LIBRARY_PATH" | tr ':' ' '); do
+        if [ -f "$path/libz.so" ] || [ -f "$path/libz.a" ]; then
+            CFLAGS="$CFLAGS -I$(dirname "$path")/include"
+            LIBS="$LIBS -L$path -lz"
+            echo "Found zlib via LD_LIBRARY_PATH: $path"
+            break
+        fi
+    done
+fi
+
+if ! echo "$LIBS" | grep -q "\-lz"; then
+    if pkg-config --exists zlib 2>/dev/null; then
+        ZLIB_CFLAGS=$(pkg-config --cflags zlib 2>/dev/null || echo "")
+        ZLIB_LIBS=$(pkg-config --libs zlib 2>/dev/null || echo "")
+        CFLAGS="$CFLAGS $ZLIB_CFLAGS"
+        LIBS="$LIBS $ZLIB_LIBS"
+        echo "Found zlib via pkg-config"
+    else
+        LIBS="$LIBS -lz"
+        echo "Using fallback zlib: -lz"
+    fi
+fi
+
+# 3. Find sqlite3
+# Priority: LD_LIBRARY_PATH -> pkg-config -> fallback
+SQLITE_FOUND=false
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    for path in $(echo "$LD_LIBRARY_PATH" | tr ':' ' '); do
+        if [ -f "$path/libsqlite3.so" ] || [ -f "$path/libsqlite3.a" ]; then
+            CFLAGS="$CFLAGS -I$(dirname "$path")/include"
+            LIBS="$LIBS -L$path -lsqlite3"
+            SQLITE_FOUND=true
+            echo "Found sqlite3 via LD_LIBRARY_PATH: $path"
+            break
+        fi
+    done
+fi
+
+if [ "$SQLITE_FOUND" = false ]; then
+    if pkg-config --exists sqlite3 2>/dev/null; then
+        SQLITE_CFLAGS=$(pkg-config --cflags sqlite3 2>/dev/null || echo "")
+        SQLITE_LIBS=$(pkg-config --libs sqlite3 2>/dev/null || echo "")
+        CFLAGS="$CFLAGS $SQLITE_CFLAGS"
+        LIBS="$LIBS $SQLITE_LIBS"
+        echo "Found sqlite3 via pkg-config"
+    else
+        LIBS="$LIBS -lsqlite3"
+        echo "Using fallback sqlite3: -lsqlite3"
+    fi
+fi
+
+# 4. Find bzip2 (needed by htslib)
+# Priority: LD_LIBRARY_PATH -> pkg-config -> fallback
+BZ2_FOUND=false
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    for path in $(echo "$LD_LIBRARY_PATH" | tr ':' ' '); do
+        if [ -f "$path/libbz2.so" ] || [ -f "$path/libbz2.so.1" ]; then
+            LIBS="$LIBS -L$path -lbz2"
+            BZ2_FOUND=true
+            echo "Found bzip2 via LD_LIBRARY_PATH: $path"
+            break
+        fi
+    done
+fi
+
+if [ "$BZ2_FOUND" = false ]; then
+    if pkg-config --exists libbz2 2>/dev/null; then
+        BZ2_LIBS=$(pkg-config --libs libbz2 2>/dev/null || echo "")
+        LIBS="$LIBS $BZ2_LIBS"
+        echo "Found libbz2 via pkg-config"
+    elif pkg-config --exists bzip2 2>/dev/null; then
+        BZ2_LIBS=$(pkg-config --libs bzip2 2>/dev/null || echo "")
+        LIBS="$LIBS $BZ2_LIBS"
+        echo "Found bzip2 via pkg-config"
+    else
+        LIBS="$LIBS -lbz2"
+        echo "Using fallback bzip2: -lbz2"
+    fi
+fi
+
+# 5. Find openssl (needed by htslib)
+# Priority: LD_LIBRARY_PATH -> pkg-config -> fallback
+SSL_FOUND=false
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    for path in $(echo "$LD_LIBRARY_PATH" | tr ':' ' '); do
+        if [ -f "$path/libssl.so" ] || [ -f "$path/libcrypto.so" ]; then
+            LIBS="$LIBS -L$path -lssl -lcrypto"
+            SSL_FOUND=true
+            echo "Found openssl via LD_LIBRARY_PATH: $path"
+            break
+        fi
+    done
+fi
+
+if [ "$SSL_FOUND" = false ]; then
+    if pkg-config --exists openssl 2>/dev/null; then
+        SSL_LIBS=$(pkg-config --libs openssl 2>/dev/null || echo "")
+        LIBS="$LIBS $SSL_LIBS"
+        echo "Found openssl via pkg-config"
+    else
+        LIBS="$LIBS -lssl -lcrypto"
+        echo "Using fallback openssl: -lssl -lcrypto"
+    fi
+fi
+
+# 6. OpenMP (usually system-installed)
+if pkg-config --exists omp 2>/dev/null; then
+    OMP_LIBS=$(pkg-config --libs omp 2>/dev/null || echo "")
+    LIBS="$LIBS $OMP_LIBS"
+    echo "Found OpenMP via pkg-config"
+else
+    LIBS="$LIBS -fopenmp"
+    echo "Using fallback OpenMP: -fopenmp"
+fi
+
+# Add pthread
+LIBS="$LIBS -lpthread"
+
+export CFLAGS
+export LDFLAGS
+
+echo "CFLAGS: $CFLAGS"
+echo "LDFLAGS: $LDFLAGS"
+echo "LIBS: $LIBS"
+
+# Build cmake command
+CMAKE_CMD="cmake $CMAKE_DIR"
+CMAKE_CMD="$CMAKE_CMD -DCMAKE_BUILD_TYPE=Release"
+CMAKE_CMD="$CMAKE_CMD -DCMAKE_C_COMPILER=/usr/bin/gcc"
+CMAKE_CMD="$CMAKE_CMD -DCMAKE_CXX_COMPILER=/usr/bin/g++"
+
+echo "Running cmake..."
+
+# Run cmake
+cd "$BUILD_DIR"
+$CMAKE_CMD > /dev/null 2>&1
+
+# Build fastF
+make fastF
+
+# Copy to inst/bin if built successfully
+if [ -f "$BUILD_DIR/fastF" ]; then
+    cp "$BUILD_DIR/fastF" "$INST_BIN/"
+    echo "fastF binary installed to inst/bin/"
+    echo "=== Build complete ==="
+else
+    echo "ERROR: fastF build failed"
+    exit 1
+fi
+
+exit 0

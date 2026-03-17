@@ -1,7 +1,12 @@
 test_that("sample prep", {
   library(Seurat)
 
-  ref_list <- readRDS("~/Documents/Research/FastQDesign/reference_list.rds")
+  ref_list <- readRDS("/scratch/g/chlin/Yu/FastQDesign/data/reference_list.rds")
+
+  root_cells <- c(
+    names(ref_list$dfPsedutimeCd4$pseudotime)[ref_list$dfPsedutimeCd4$root_cells],
+    names(ref_list$dfPsedutimeCd8$pseudotime)[ref_list$dfPsedutimeCd8$root_cells]
+  )
 
   ds <- DownSample(
     ref_list[[1]],
@@ -21,14 +26,14 @@ test_that("sample prep", {
     verbose = TRUE
   )
 
-  bam_ds_list <- readRDS("~/Documents/Research/FastQDesign/bam_downsample_list.rds")
+  bam_ds_list <- readRDS("/scratch/g/chlin/Yu/FastQDesign/data/bam_downsample_list.rds")
 
   ds_list <- SamplePrep(
     bam_ds_list[[1]],
     n_clusters = 4,
     condition = "orig.ident",
     cell_3d_embedding = TRUE,
-    root_cells_ref = Cells(cb03_list[[1]])[cb03_list[[1]]$root_cells],
+    root_cells_ref = root_cells,
     min.pct = 0.2,
     logfc.threshold = 0.3,
     return.thresh = 0.05,
