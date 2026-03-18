@@ -7,24 +7,33 @@ easy access.
 
 ### BAM Files (scRNA-seq alignments)
 
-Download from: <https://zenodo.org/records/19072084>
+Download from: <https://zenodo.org/records/19073177>
 
-Contains BAM files with cell barcodes (CB tag) and UMI (UB tag) for
-testing: - `CD4_T_sorted_10x.bam` - `CD8_T_sorted_10x.bam` -
-`PBMC_10x.bam`
+Contains Cellranger-aligned BAM files with cell barcodes (CB tag) and
+UMI (UB tag):
+
+| File                                 | Size    |
+|--------------------------------------|---------|
+| `P1_AI_possorted_genome_bam.bam`     | 13.1 GB |
+| `P1_AI_possorted_genome_bam.bam.bai` | 4.1 MB  |
+| `P1_BM_possorted_genome_bam.bam`     | 14.4 GB |
+| `P1_BM_possorted_genome_bam.bam.bai` | 4.4 MB  |
 
 ### Seurat Objects (processed data)
 
-Download from: <https://zenodo.org/records/19073177>
+Download from: <https://zenodo.org/records/19072084>
 
-Contains pre-processed Seurat objects with: - Normalized counts -
-PCA/UMAP embeddings - Cluster annotations - Cell metadata
+Contains pre-processed Seurat objects:
 
-## Direct URL Streaming
+| File                      | Size     |
+|---------------------------|----------|
+| `bam_downsample_list.rds` | 77.9 MB  |
+| `reference_list.rds`      | 191.2 MB |
 
-BAM files can be accessed directly from URL without downloading,
-provided: 1. The remote server supports HTTP range requests 2. Both
-`.bam` and `.bai` (index) files are accessible via URL
+## URL Streaming (No Download Required)
+
+BAM files can be accessed directly from Zenodo URL without downloading.
+Zenodo supports HTTP range requests, enabling efficient remote access.
 
 ### Using Rsamtools
 
@@ -32,61 +41,55 @@ provided: 1. The remote server supports HTTP range requests 2. Both
 
 library(Rsamtools)
 
-# Remote BAM with remote index
-bam_url <- "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam"
-bai_url <- "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam.bai"
+bam_url <- "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam"
+bai_url <- "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam.bai"
 
-# Create BamFile with remote access
 bf <- BamFile(bam_url, index = bai_url)
 
-# Scan reads
-scanBam(bf)
+# Read BAM header (verifies URL access)
+header <- scanBamHeader(bf)
+names(header$targets)
 ```
 
-### Using fastF from URL
+### Using fastF
+
+The fastF binary supports URL streaming via htslib:
 
 ``` r
 
-# Download BAM files
-FastQDesign::fastF_bam2db(
-  bam = "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam",
-  feature = "genes.tsv",
-  barcode = "whitelist.txt",
-  out = "output/"
+library(FastQDesign)
+
+# Stream BAM directly from URL
+FastQDesign::fastF_crb(
+  bam = "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam",
+  out = "output.tsv.gz"
 )
 ```
+
+Note: Both BAM and BAI files must be accessible at the same URL path.
 
 ## Local Download
 
-Alternatively, download files first:
-
 ``` r
 
-# Download BAM files
+# Download BAM
 download.file(
-  "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam",
-  destfile = "CD4_T_sorted_10x.bam"
-)
-download.file(
-  "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam.bai",
-  destfile = "CD4_T_sorted_10x.bam.bai"
+  "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam",
+  destfile = "P1_AI_possorted_genome_bam.bam"
 )
 
 # Download Seurat object
 download.file(
-  "https://zenodo.org/records/19073177/files/CD4_T_sorted_10x.rds",
-  destfile = "CD4_T_sorted_10x.rds"
+  "https://zenodo.org/records/19072084/files/reference_list.rds",
+  destfile = "reference_list.rds"
 )
 
-# Load in R
 library(Seurat)
-seurat_obj <- readRDS("CD4_T_sorted_10x.rds")
+seurat_obj <- readRDS("reference_list.rds")
 ```
 
 ## Citation
 
-If you use these datasets, please cite:
-
-    FastQDesign Test Data (2024). Zenodo. 
+    Wang Y (2026). FastQDesign Test Data. Zenodo.
     https://zenodo.org/records/19072084
     https://zenodo.org/records/19073177
