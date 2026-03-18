@@ -32,8 +32,8 @@ Contains pre-processed Seurat objects:
 
 ## URL Streaming (No Download Required)
 
-BAM files can be accessed directly from Zenodo URL without downloading.
-Zenodo supports HTTP range requests, enabling efficient remote access.
+BAM files can be accessed directly from Zenodo URL. Note: Zenodo BAM
+files are large (13-14 GB each), so streaming may be slow.
 
 ### Using Rsamtools
 
@@ -45,28 +45,25 @@ bam_url <- "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam
 bai_url <- "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam.bai"
 
 bf <- BamFile(bam_url, index = bai_url)
-
-# Read BAM header (verifies URL access)
 header <- scanBamHeader(bf)
-names(header$targets)
 ```
 
 ### Using fastF
 
-The fastF binary supports URL streaming via htslib:
+fastF supports URL streaming but downloading is recommended for large
+BAM files:
 
 ``` r
 
-library(FastQDesign)
-
-# Stream BAM directly from URL
+# Works but slow for 13GB files
 FastQDesign::fastF_crb(
   bam = "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam",
   out = "output.tsv.gz"
 )
 ```
 
-Note: Both BAM and BAI files must be accessible at the same URL path.
+**Recommendation:** For large BAM files, download first rather than
+stream.
 
 ## Local Download
 
