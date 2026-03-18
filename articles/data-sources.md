@@ -20,9 +20,45 @@ Download from: <https://zenodo.org/records/19073177>
 Contains pre-processed Seurat objects with: - Normalized counts -
 PCA/UMAP embeddings - Cluster annotations - Cell metadata
 
-## Usage
+## Direct URL Streaming
 
-Download the files and use locally:
+BAM files can be accessed directly from URL without downloading,
+provided: 1. The remote server supports HTTP range requests 2. Both
+`.bam` and `.bai` (index) files are accessible via URL
+
+### Using Rsamtools
+
+``` r
+
+library(Rsamtools)
+
+# Remote BAM with remote index
+bam_url <- "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam"
+bai_url <- "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam.bai"
+
+# Create BamFile with remote access
+bf <- BamFile(bam_url, index = bai_url)
+
+# Scan reads
+scanBam(bf)
+```
+
+### Using fastF from URL
+
+``` r
+
+# Download BAM files
+FastQDesign::fastF_bam2db(
+  bam = "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam",
+  feature = "genes.tsv",
+  barcode = "whitelist.txt",
+  out = "output/"
+)
+```
+
+## Local Download
+
+Alternatively, download files first:
 
 ``` r
 
@@ -31,16 +67,18 @@ download.file(
   "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam",
   destfile = "CD4_T_sorted_10x.bam"
 )
-
-# Process with fastF
-FastQDesign::fastF_bam2db(
-  bam = "CD4_T_sorted_10x.bam",
-  feature = "genes.tsv",
-  barcode = "whitelist.txt",
-  out = "output/"
+download.file(
+  "https://zenodo.org/records/19072084/files/CD4_T_sorted_10x.bam.bai",
+  destfile = "CD4_T_sorted_10x.bam.bai"
 )
 
-# Load Seurat object
+# Download Seurat object
+download.file(
+  "https://zenodo.org/records/19073177/files/CD4_T_sorted_10x.rds",
+  destfile = "CD4_T_sorted_10x.rds"
+)
+
+# Load in R
 library(Seurat)
 seurat_obj <- readRDS("CD4_T_sorted_10x.rds")
 ```
