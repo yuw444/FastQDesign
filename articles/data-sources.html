@@ -121,8 +121,8 @@ UMI (UB tag):</p>
 <div class="section level2">
 <h2 id="url-streaming-no-download-required">URL Streaming (No Download Required)<a class="anchor" aria-label="anchor" href="#url-streaming-no-download-required"></a>
 </h2>
-<p>BAM files can be accessed directly from Zenodo URL. Note: Zenodo BAM
-files are large (13-14 GB each), so streaming may be slow.</p>
+<p>BAM files can be accessed directly from Zenodo URL without
+downloading.</p>
 <div class="section level3">
 <h3 id="using-rsamtools">Using Rsamtools<a class="anchor" aria-label="anchor" href="#using-rsamtools"></a>
 </h3>
@@ -138,16 +138,19 @@ files are large (13-14 GB each), so streaming may be slow.</p>
 <div class="section level3">
 <h3 id="using-fastf">Using fastF<a class="anchor" aria-label="anchor" href="#using-fastf"></a>
 </h3>
-<p>fastF supports URL streaming but downloading is recommended for large
-BAM files:</p>
+<p>fastF supports URL streaming for <code>extract</code> and
+<code>crb</code> subcommands:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Works but slow for 13GB files</span></span>
-<span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_crb.html">fastF_crb</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="co"># Extract CR tags (UMI sequences)</span></span>
+<span><span class="co"># Processes 182M reads in ~8 minutes from URL</span></span>
+<span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_extract.html">fastF_extract</a></span><span class="op">(</span></span>
 <span>  bam <span class="op">=</span> <span class="st">"https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam"</span>,</span>
-<span>  out <span class="op">=</span> <span class="st">"output.tsv.gz"</span></span>
+<span>  tag <span class="op">=</span> <span class="st">"CR"</span>,</span>
+<span>  type <span class="op">=</span> <span class="fl">0</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p><strong>Recommendation:</strong> For large BAM files, download first
-rather than stream.</p>
+<p>The <code>extract</code> subcommand streams BAM via htslib’s HTTP
+support. For very large files, this is efficient as only necessary
+regions are downloaded.</p>
 </div>
 </div>
 <div class="section level2">

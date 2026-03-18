@@ -32,8 +32,7 @@ Contains pre-processed Seurat objects:
 
 ## URL Streaming (No Download Required)
 
-BAM files can be accessed directly from Zenodo URL. Note: Zenodo BAM
-files are large (13-14 GB each), so streaming may be slow.
+BAM files can be accessed directly from Zenodo URL without downloading.
 
 ### Using Rsamtools
 
@@ -50,20 +49,21 @@ header <- scanBamHeader(bf)
 
 ### Using fastF
 
-fastF supports URL streaming but downloading is recommended for large
-BAM files:
+fastF supports URL streaming for `extract` and `crb` subcommands:
 
 ``` r
 
-# Works but slow for 13GB files
-FastQDesign::fastF_crb(
+# Extract CR tags (UMI sequences)
+# Processes 182M reads in ~8 minutes from URL
+FastQDesign::fastF_extract(
   bam = "https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam",
-  out = "output.tsv.gz"
+  tag = "CR",
+  type = 0
 )
 ```
 
-**Recommendation:** For large BAM files, download first rather than
-stream.
+The `extract` subcommand streams BAM via htslib’s HTTP support. For very
+large files, this is efficient as only necessary regions are downloaded.
 
 ## Local Download
 
