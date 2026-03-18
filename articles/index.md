@@ -14,3 +14,8 @@
 
 - [Sample Preparation and
   Analysis](https://yuw444.github.io/FastQDesign/articles/sample-prep.md):
+
+### Data
+
+- [External Data
+  Sources](https://yuw444.github.io/FastQDesign/articles/data-sources.md):
