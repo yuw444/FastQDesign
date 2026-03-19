@@ -15,7 +15,6 @@ permissions: read-all
 jobs:
   pkgdown:
     runs-on: ubuntu-latest
-    # Only restrict concurrency for non-PR jobs
     concurrency:
       group: pkgdown-${{ github.event_name != 'pull_request' || github.run_id }}
     env:
@@ -25,37 +24,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: r-lib/actions/setup-pandoc@v2
-
-      - uses: r-lib/actions/setup-r@v2
+      - name: Install micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          use-public-rspm: true
+          environment-file: environment.yml
+          environment-name: fastqdesign
 
-      - name: Install system dependencies
-        run: |
-          # Try libhts-dev first, fall back to building htslib from source
-          sudo apt-get update
-          if apt-cache show libhts-dev >/dev/null 2>&1; then
-            sudo apt-get install -y libhts-dev libbz2-dev zlib1g-dev libssl-dev libsqlite3-dev
-          else
-            # Install htslib from source if not available
-            wget -q https://github.com/samtools/htslib/releases/download/1.20/htslib-1.20.tar.bz2
-            tar -xjf htslib-1.20.tar.bz2
-            cd htslib-1.20
-            ./configure --prefix=/usr/local
-            make -j$(nproc)
-            sudo make install
-            cd ..
-            sudo apt-get install -y libbz2-dev zlib1g-dev libssl-dev libsqlite3-dev
-          fi
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::pkgdown, local::.
+          extra-packages: any::pkgdown
           needs: website
 
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        run: pkgdown::build_site_github_pages(new_process = FALSE, install = TRUE)
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀
