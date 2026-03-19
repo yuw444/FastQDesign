@@ -2,14 +2,13 @@ name: fastqdesign
 channels:
   - conda-forge
   - bioconda
-  - defaults
 dependencies:
   - r-base>=4.0
   - htslib
   - cmake
   - gcc_linux-64
   - gxx_linux-64
-  - zlib
+  - libzlib
   - libbz2
-  - openssl
+  - libopenssl
   - sqlite
