@@ -1,0 +1,28 @@
+name: fastqdesign
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base>=4.3
+  - r-pkgdown
+  - r-roxygen2
+  - r-testthat
+  - bioconductor-seurat
+  - bioconductor-monocle3
+  - r-glmgampoi
+  - r-dplyr
+  - r-ggplot2
+  - r-patchwork
+  - r-matrix
+  - r-rcolorbrewer
+  - bioconductor-summarizedexperiment
+  - r-fpc
+  - r-igraph
+  - r-jsonlite
+  - r-magrittr
+  - r-purrr
+  - r-scales
+  - r-scam
+  - r-tibble
+  - htslib
+  - cmake
