@@ -33,7 +33,12 @@ jobs:
 
       - name: Install R dependencies
         run: |
-          install.packages("pkgdown", repos = "https://cloud.r-project.org")
+          Rscript -e 'install.packages(c(
+            "pkgdown", "roxygen2",
+            "Seurat", "monocle3", "glmGamPoi", "dplyr", "ggplot2", "patchwork",
+            "Matrix", "RColorBrewer", "SummarizedExperiment", "fpc", "igraph",
+            "jsonlite", "magrittr", "purrr", "scales", "scam", "tibble"
+          ), repos = "https://cloud.r-project.org")'
 
       - name: Build site
         run: Rscript -e 'pkgdown::build_site()'
