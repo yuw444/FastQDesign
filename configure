@@ -5,6 +5,10 @@
 
 set -e
 
+echo "DEBUG: configure starting"
+echo "DEBUG: LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+echo "DEBUG: PATH=$PATH"
+
 # Find R from micromamba environment if not in PATH
 if ! command -v cmake &> /dev/null; then
     R_LIB_BIN=$(R --quiet --no-save -e 'cat(dirname(R.home()), "/bin", sep="")' 2>/dev/null | tr -d ' ')
@@ -64,19 +68,16 @@ fi
 # Check common paths (including CI environments)
 if [ -z "$HTSLIB_PATH" ]; then
     for path in \
+        /usr/local/lib \
+        /usr/local/lib64 \
+        /usr/lib \
+        /usr/lib64 \
+        /lib \
+        /lib64 \
         /hpc/apps/htslib/1.22.1 \
-        /usr/local \
-        /usr \
-        /opt/htslib \
-        ~/anaconda3 \
-        ~/miniconda3 \
-        /home/runner; do
-        if [ -f "$path/lib/libhts.so" ] || [ -f "$path/lib/libhts.a" ]; then
-            HTSLIB_PATH="$path/lib"
-            break
-        fi
-        if [ -f "$path/lib64/libhts.so" ] || [ -f "$path/lib64/libhts.a" ]; then
-            HTSLIB_PATH="$path/lib64"
+        /opt/htslib; do
+        if [ -f "$path/libhts.so" ] || [ -f "$path/libhts.a" ]; then
+            HTSLIB_PATH="$path"
             break
         fi
     done
@@ -104,6 +105,18 @@ if [ -n "$HTSLIB_PATH" ]; then
 fi
 
 if [ "$HTSLIB_FOUND" = false ]; then
+    echo "DEBUG: LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
+    echo "DEBUG: Searching for libhts.so in common locations..."
+    for path in \
+        /usr/lib/x86_64-linux-gnu \
+        /usr/lib64 \
+        /usr/lib \
+        /usr/local/lib \
+        /usr/local/lib64; do
+        if [ -f "$path/libhts.so" ]; then
+            echo "DEBUG: Found at $path"
+        fi
+    done
     echo "ERROR: htslib not found. Please install it."
     echo "Try: apt install libhts-dev or conda install htslib"
     exit 1
