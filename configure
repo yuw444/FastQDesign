@@ -61,21 +61,31 @@ if [ -n "$LD_LIBRARY_PATH" ]; then
     done
 fi
 
+# Also check /usr/local/lib
+if [ -z "$HTSLIB_PATH" ] && [ -f "/usr/local/lib/libhts.so" ]; then
+    HTSLIB_PATH="/usr/local/lib"
+fi
+
 # Check common paths (including CI environments)
 if [ -z "$HTSLIB_PATH" ]; then
     for path in \
-        /usr/local/lib \
-        /usr/local/lib64 \
-        /usr/lib \
-        /usr/lib64 \
-        /lib \
-        /lib64 \
+        /usr/local \
         /hpc/apps/htslib/1.22.1 \
-        /opt/htslib; do
-        if [ -f "$path/libhts.so" ] || [ -f "$path/libhts.a" ]; then
-            HTSLIB_PATH="$path"
+        /usr \
+        /opt/htslib \
+        ~/anaconda3 \
+        ~/miniconda3 \
+        /home/runner; do
+        if [ -f "$path/lib/libhts.so" ] || [ -f "$path/lib/libhts.a" ]; then
+            HTSLIB_PATH="$path/lib"
             break
         fi
+        if [ -f "$path/lib64/libhts.so" ] || [ -f "$path/lib64/libhts.a" ]; then
+            HTSLIB_PATH="$path/lib64"
+            break
+        fi
+    done
+fi
     done
 fi
 
