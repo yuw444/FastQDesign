@@ -140,8 +140,6 @@ fastF_filter <- function(R1, R2 = NULL, I1 = NULL, out = ".",
 #' @return Invisible NULL. Creates TSV file with CB->CR->count mapping.
 #' @export
 fastF_crb <- function(bam, out = "crb_output.tsv") {
-  if (!file.exists(bam)) stop("BAM file does not exist: ", bam)
-  
   args <- c("crb",
             "-b", bam,
             "-o", out)
@@ -166,7 +164,6 @@ fastF_crb <- function(bam, out = "crb_output.tsv") {
 fastF_bam2db <- function(bam, feature, barcode, out = ".",
                           dbname = ":memory:", cell = 1.0, depth = 1.0,
                           seed = 926L, umicopies = FALSE) {
-  if (!file.exists(bam)) stop("BAM file does not exist: ", bam)
   if (!file.exists(feature)) stop("Feature file does not exist: ", feature)
   if (!file.exists(barcode)) stop("Barcode file does not exist: ", barcode)
   
@@ -194,7 +191,6 @@ fastF_bam2db <- function(bam, feature, barcode, out = ".",
 #' @return Invisible NULL. Creates tag_summary.csv in current directory.
 #' @export
 fastF_extract <- function(bam, tag, type = 0L) {
-  if (!file.exists(bam)) stop("BAM file does not exist: ", bam)
   if (is.null(tag)) stop("--tag is required")
   
   args <- c("extract",

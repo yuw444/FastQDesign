@@ -3,8 +3,21 @@
 \docType{package}
 \name{FastQDesign-package}
 \alias{FastQDesign-package}
-\title{FastQDesign: What the Package Does (Title Case)}
+\title{FastQDesign: scRNA-seq Experiment Design Tool}
 \description{
-More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
+Guide investigators in designing single-cell RNA sequencing experiments by shifting focus from UMI matrix back to raw FastQ reads. Includes the fastF C tool for pseudo-design dataset generation.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/yuw444/FastQDesign}
+  \item \url{https://yuw444.github.io/FastQDesign/}
+  \item Report bugs at \url{https://github.com/yuw444/FastQDesign/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Yu Wang \email{yuw444@gmail.com}
+
 }
 \keyword{internal}

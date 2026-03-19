@@ -55,6 +55,9 @@ articles:
   - title: Sample Analysis
     contents:
       - sample-prep
+  - title: Data
+    contents:
+      - data-sources
 
 development:
   mode: auto

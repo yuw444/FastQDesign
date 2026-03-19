@@ -220,6 +220,7 @@ LIBS="$LIBS -lpthread"
 
 export CFLAGS
 export LDFLAGS
+export LIBS
 
 echo "CFLAGS: $CFLAGS"
 echo "LDFLAGS: $LDFLAGS"

@@ -317,12 +317,8 @@ int cmd_bam2db(int argc, const char **argv)
 
     argc = argparse_parse(&argparse, argc, argv);
 
-    // check the existence of input files
-    if (access(path_bam_arg, F_OK) == -1)
-    {
-        fprintf(stderr, "\x1b[31mError:\x1b[0m bam file: %s does not exist.\n", path_bam_arg);
-        exit(1);
-    }
+    // check the existence of input files (skip BAM check - htslib handles URLs)
+    // Note: feature and barcode files are local
 
     if (access(path_feature_arg, F_OK) == -1)
     {
@@ -381,12 +377,6 @@ int cmd_extract(int argc, const char **argv)
         "\nOutput: tag_summary.csv with tag frequencies.");
 
     argc = argparse_parse(&argparse, argc, argv);
-
-    if (access(path_bam_arg, F_OK) == -1)
-    {
-        fprintf(stderr, "\x1b[31mError:\x1b[0m bam file: %s does not exist.\n", path_bam_arg);
-        exit(1);
-    }
 
     if (tag_arg == NULL)
     {
