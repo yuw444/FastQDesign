@@ -61,11 +61,22 @@ if [ -n "$LD_LIBRARY_PATH" ]; then
     done
 fi
 
-# Fallback: check common paths
+# Check common paths (including CI environments)
 if [ -z "$HTSLIB_PATH" ]; then
-    for path in /hpc/apps/htslib/1.22.1 /usr /usr/local /opt/htslib; do
+    for path in \
+        /hpc/apps/htslib/1.22.1 \
+        /usr/local \
+        /usr \
+        /opt/htslib \
+        ~/anaconda3 \
+        ~/miniconda3 \
+        /home/runner; do
         if [ -f "$path/lib/libhts.so" ] || [ -f "$path/lib/libhts.a" ]; then
             HTSLIB_PATH="$path/lib"
+            break
+        fi
+        if [ -f "$path/lib64/libhts.so" ] || [ -f "$path/lib64/libhts.a" ]; then
+            HTSLIB_PATH="$path/lib64"
             break
         fi
     done
@@ -89,11 +100,12 @@ if [ -n "$HTSLIB_PATH" ]; then
     LDFLAGS="$LDFLAGS -L$HTSLIB_PATH"
     LIBS="$LIBS -lhts"
     HTSLIB_FOUND=true
-    echo "Found htslib via LD_LIBRARY_PATH: $HTSLIB_PATH"
+    echo "Found htslib: $HTSLIB_PATH"
 fi
 
 if [ "$HTSLIB_FOUND" = false ]; then
     echo "ERROR: htslib not found. Please install it."
+    echo "Try: apt install libhts-dev or conda install htslib"
     exit 1
 fi
 
