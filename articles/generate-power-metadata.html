@@ -108,8 +108,29 @@ across replicates</li>
 <div class="section level2">
 <h2 id="data-source">Data Source<a class="anchor" aria-label="anchor" href="#data-source"></a>
 </h2>
-<p>The AI and BM BAM files used in this vignette are available from
-Zenodo:</p>
+<p>This vignette requires BAM files to generate downsampled UMI
+matrices. The package includes a small test dataset, but generating
+power metadata requires the full AI/BM BAM files from Zenodo.</p>
+<div class="section level3">
+<h3 id="package-test-data">Package Test Data<a class="anchor" aria-label="anchor" href="#package-test-data"></a>
+</h3>
+<p>For quick testing, the package includes small test files:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Test data paths (small files for learning the workflow)</span></span>
+<span><span class="va">test_R1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R1.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_R2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R2.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_bam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test.bam"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"features.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_barcodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"barcodes.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Note:</strong> The package <code>reference_list.rds</code>
+contains pre-processed data for the sample-prep vignette, not the full
+BAM-to-matrix data needed here.</p>
+</div>
+<div class="section level3">
+<h3 id="full-dataset-zenodo">Full Dataset (Zenodo)<a class="anchor" aria-label="anchor" href="#full-dataset-zenodo"></a>
+</h3>
+<p>For generating real power metadata, download the full AI/BM BAM
+files:</p>
 <p><strong>BAM Files:</strong> <a href="https://zenodo.org/records/19073177" class="external-link">https://zenodo.org/records/19073177</a></p>
 <table class="table">
 <thead><tr class="header">
@@ -137,31 +158,25 @@ Zenodo:</p>
 <th>Description</th>
 <th>Size</th>
 </tr></thead>
-<tbody>
-<tr class="odd">
+<tbody><tr class="odd">
 <td><code>reference_list.rds</code></td>
 <td>Reference SamplePrep output</td>
 <td>191.2 MB</td>
-</tr>
-<tr class="even">
-<td><code>bam_downsample_list.rds</code></td>
-<td>Processed downsampled data</td>
-<td>77.9 MB</td>
-</tr>
-</tbody>
+</tr></tbody>
 </table>
+</div>
 <div class="section level3">
 <h3 id="downloading-bam-files">Downloading BAM Files<a class="anchor" aria-label="anchor" href="#downloading-bam-files"></a>
 </h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Download AI BAM</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam.bai</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># Download BM BAM</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Download AI BAM</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam.bai</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Download BM BAM</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">wget</span> https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai</span></code></pre></div>
 <p>Or use R to download:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Download AI BAM</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
 <span>  <span class="st">"https://zenodo.org/records/19073177/files/P1_AI_possorted_genome_bam.bam"</span>,</span>
@@ -178,7 +193,7 @@ Zenodo:</p>
 <span>  destfile <span class="op">=</span> <span class="st">"P1_BM_possorted_genome_bam.bam"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
-<span>  <span class="st">"https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bai"</span>,</span>
+<span>  <span class="st">"https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai"</span>,</span>
 <span>  destfile <span class="op">=</span> <span class="st">"P1_BM_possorted_genome_bam.bai"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -186,21 +201,28 @@ Zenodo:</p>
 <h3 id="generating-feature-and-barcode-files">Generating Feature and Barcode Files<a class="anchor" aria-label="anchor" href="#generating-feature-and-barcode-files"></a>
 </h3>
 <p>The BAM files contain Cell Ranger-aligned reads with CB (cell
-barcode) and UB (UMI) tags. After downloading the Seurat objects from
-Zenodo, you can extract the feature and barcode files:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Load reference Seurat object</span></span>
+barcode) and UB (UMI) tags. After downloading, use the Cell Ranger
+output directory for feature and barcode files:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># If you have Cell Ranger output, use the filtered_feature_bc_matrix directory</span></span>
+<span><span class="va">REF_AI</span> <span class="op">&lt;-</span> <span class="st">"/path/to/P1_AI/outs/filtered_feature_bc_matrix"</span></span>
+<span><span class="va">REF_BM</span> <span class="op">&lt;-</span> <span class="st">"/path/to/P1_BM/outs/filtered_feature_bc_matrix"</span></span></code></pre></div>
+<p>Alternatively, extract barcodes from the reference list downloaded
+from Zenodo:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Download reference from Zenodo</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://zenodo.org/records/19072084/files/reference_list.rds"</span>,</span>
+<span>  destfile <span class="op">=</span> <span class="st">"reference_list.rds"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">ref_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"reference_list.rds"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Extract barcodes from reference</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ref_list</span><span class="op">$</span><span class="va">Seurat</span><span class="op">)</span>, <span class="st">"ai_barcodes.tsv"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ref_list</span><span class="op">$</span><span class="va">Seurat</span><span class="op">)</span>, <span class="st">"bm_barcodes.tsv"</span><span class="op">)</span></span>
+<span><span class="co"># Extract barcodes for AI and BM samples</span></span>
+<span><span class="va">ai_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^ai"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ref_list</span><span class="op">$</span><span class="va">Seurat</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">bm_cells</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grep</a></span><span class="op">(</span><span class="st">"^bm"</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">ref_list</span><span class="op">$</span><span class="va">Seurat</span><span class="op">)</span>, value <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># For features, use Cell Ranger reference (e.g., mm10 or GRCh38)</span></span>
-<span><span class="co"># Or extract from the BAM header using samtools:</span></span>
-<span><span class="co"># samtools view -H P1_AI_possorted_genome_bam.bam | grep "^@SQ"</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">ai_cells</span>, <span class="st">"ai_barcodes.tsv"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/writeLines.html" class="external-link">writeLines</a></span><span class="op">(</span><span class="va">bm_cells</span>, <span class="st">"bm_barcodes.tsv"</span><span class="op">)</span></span></code></pre></div>
 <p>For more details on data preparation, see the <a href="../data-sources/index.html">External Data Sources</a>
 vignette.</p>
 </div>
@@ -208,7 +230,7 @@ vignette.</p>
 <div class="section level2">
 <h2 id="step-1-define-configuration">Step 1: Define Configuration<a class="anchor" aria-label="anchor" href="#step-1-define-configuration"></a>
 </h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/FastQDesign" class="external-link">FastQDesign</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -248,7 +270,7 @@ vignette.</p>
 <h2 id="step-2-prepare-reference">Step 2: Prepare Reference<a class="anchor" aria-label="anchor" href="#step-2-prepare-reference"></a>
 </h2>
 <p>Load and prepare the reference UMI matrices:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load reference UMI matrices</span></span>
 <span><span class="va">AI_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/Read10X.html" class="external-link">Read10X</a></span><span class="op">(</span><span class="va">REF_AI</span><span class="op">)</span></span>
 <span><span class="va">BM_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://satijalab.org/seurat/reference/Read10X.html" class="external-link">Read10X</a></span><span class="op">(</span><span class="va">REF_BM</span><span class="op">)</span></span>
@@ -280,7 +302,7 @@ vignette.</p>
 <h2 id="step-3-generate-downsampled-matrices-with-fastf">Step 3: Generate Downsampled Matrices with fastF<a class="anchor" aria-label="anchor" href="#step-3-generate-downsampled-matrices-with-fastf"></a>
 </h2>
 <p>Loop through the grid and generate downsampled UMI matrices:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create output directories</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="va">OUT_DIR</span>, <span class="st">"fastF"</span><span class="op">)</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
@@ -339,7 +361,7 @@ vignette.</p>
 </h2>
 <p>Load each downsampled matrix, compare with reference, and compute
 similarity metrics:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function to compute similarity metrics</span></span>
 <span><span class="va">compute_similarity</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">input_path</span>, <span class="va">ref_list</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
@@ -441,7 +463,7 @@ similarity metrics:</p>
 </h2>
 <p>Average across replicates and convert to the format expected by
 <code><a href="../reference/FastQDesign.html">FastQDesign()</a></code>:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Aggregate: mean power across replicates per grid point</span></span>
 <span><span class="va">df_power_agg</span> <span class="op">&lt;-</span> <span class="va">df_results</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">cell_rate</span>, <span class="va">read_rate</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -479,7 +501,7 @@ similarity metrics:</p>
 </h2>
 <p>Once you have the <code>df_power</code> data frame, you can use it
 with <code><a href="../reference/FastQDesign.html">FastQDesign()</a></code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define experiment parameters</span></span>
 <span><span class="va">budget</span> <span class="op">&lt;-</span> <span class="fl">7500</span></span>
 <span><span class="va">power_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.7</span></span>
@@ -532,34 +554,34 @@ columns:</p>
 <h2 id="batch-processing-with-slurm">Batch Processing with SLURM<a class="anchor" aria-label="anchor" href="#batch-processing-with-slurm"></a>
 </h2>
 <p>For large grids, submit as a SLURM array job:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#SBATCH --job-name=power_grid</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#SBATCH --array=1-500</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=2</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#SBATCH --mem-per-cpu=8gb</span></span>
-<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#SBATCH --time=12:00:00</span></span>
-<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co"># Calculate indices</span></span>
-<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="va">SEEDS</span><span class="op">=</span><span class="va">(</span>926 927 928 929 930<span class="va">)</span></span>
-<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="va">CELLS</span><span class="op">=</span><span class="va">(</span>0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0<span class="va">)</span></span>
-<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a><span class="va">READS</span><span class="op">=</span><span class="va">(</span>0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0<span class="va">)</span></span>
-<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="va">idx</span><span class="op">=</span><span class="va">$((SLURM_ARRAY_TASK_ID</span> <span class="op">-</span> <span class="dv">1</span><span class="va">))</span></span>
-<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="va">seed_idx</span><span class="op">=</span><span class="va">$((idx</span> <span class="op">%</span> <span class="dv">5</span><span class="va">))</span></span>
-<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="va">cell_idx</span><span class="op">=</span><span class="va">$((</span> (<span class="va">idx</span> <span class="op">/</span> <span class="dv">5</span>) <span class="op">%</span> <span class="dv">10</span> <span class="va">))</span></span>
-<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="va">read_idx</span><span class="op">=</span><span class="va">$((</span> <span class="va">idx</span> <span class="op">/</span> <span class="dv">50</span> <span class="va">))</span></span>
-<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a></span>
-<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="va">SEED</span><span class="op">=</span><span class="va">${SEEDS</span><span class="op">[</span><span class="va">$seed_idx</span><span class="op">]</span><span class="va">}</span></span>
-<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="va">CELL</span><span class="op">=</span><span class="va">${CELLS</span><span class="op">[</span><span class="va">$cell_idx</span><span class="op">]</span><span class="va">}</span></span>
-<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="va">READ</span><span class="op">=</span><span class="va">${READS</span><span class="op">[</span><span class="va">$read_idx</span><span class="op">]</span><span class="va">}</span></span>
-<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a></span>
-<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co"># Run fastF for both samples</span></span>
-<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a><span class="ex">fastF</span> bam2db <span class="at">-b</span> AI.bam <span class="at">-f</span> features.tsv <span class="at">-a</span> barcodes.tsv <span class="dt">\</span></span>
-<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a>    <span class="at">-c</span> <span class="va">$CELL</span> <span class="at">-r</span> <span class="va">$READ</span> <span class="at">-s</span> <span class="va">$SEED</span> <span class="at">-o</span> output/seed<span class="va">${SEED}</span>/N<span class="va">${CELL}</span>/R<span class="va">${READ}</span>/AI</span>
-<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a></span>
-<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="ex">fastF</span> bam2db <span class="at">-b</span> BM.bam <span class="at">-f</span> features.tsv <span class="at">-a</span> barcodes.tsv <span class="dt">\</span></span>
-<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a>    <span class="at">-c</span> <span class="va">$CELL</span> <span class="at">-r</span> <span class="va">$READ</span> <span class="at">-s</span> <span class="va">$SEED</span> <span class="at">-o</span> output/seed<span class="va">${SEED}</span>/N<span class="va">${CELL}</span>/R<span class="va">${READ}</span>/BM</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#SBATCH --job-name=power_grid</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#SBATCH --array=1-500</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#SBATCH --ntasks=1</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=2</span></span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#SBATCH --mem-per-cpu=8gb</span></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a><span class="co">#SBATCH --time=12:00:00</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a><span class="co"># Calculate indices</span></span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a><span class="va">SEEDS</span><span class="op">=</span><span class="va">(</span>926 927 928 929 930<span class="va">)</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a><span class="va">CELLS</span><span class="op">=</span><span class="va">(</span>0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0<span class="va">)</span></span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a><span class="va">READS</span><span class="op">=</span><span class="va">(</span>0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1.0<span class="va">)</span></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="va">idx</span><span class="op">=</span><span class="va">$((SLURM_ARRAY_TASK_ID</span> <span class="op">-</span> <span class="dv">1</span><span class="va">))</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="va">seed_idx</span><span class="op">=</span><span class="va">$((idx</span> <span class="op">%</span> <span class="dv">5</span><span class="va">))</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="va">cell_idx</span><span class="op">=</span><span class="va">$((</span> (<span class="va">idx</span> <span class="op">/</span> <span class="dv">5</span>) <span class="op">%</span> <span class="dv">10</span> <span class="va">))</span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="va">read_idx</span><span class="op">=</span><span class="va">$((</span> <span class="va">idx</span> <span class="op">/</span> <span class="dv">50</span> <span class="va">))</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="va">SEED</span><span class="op">=</span><span class="va">${SEEDS</span><span class="op">[</span><span class="va">$seed_idx</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="va">CELL</span><span class="op">=</span><span class="va">${CELLS</span><span class="op">[</span><span class="va">$cell_idx</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="va">READ</span><span class="op">=</span><span class="va">${READS</span><span class="op">[</span><span class="va">$read_idx</span><span class="op">]</span><span class="va">}</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co"># Run fastF for both samples</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="ex">fastF</span> bam2db <span class="at">-b</span> AI.bam <span class="at">-f</span> features.tsv <span class="at">-a</span> barcodes.tsv <span class="dt">\</span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a>    <span class="at">-c</span> <span class="va">$CELL</span> <span class="at">-r</span> <span class="va">$READ</span> <span class="at">-s</span> <span class="va">$SEED</span> <span class="at">-o</span> output/seed<span class="va">${SEED}</span>/N<span class="va">${CELL}</span>/R<span class="va">${READ}</span>/AI</span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="ex">fastF</span> bam2db <span class="at">-b</span> BM.bam <span class="at">-f</span> features.tsv <span class="at">-a</span> barcodes.tsv <span class="dt">\</span></span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a>    <span class="at">-c</span> <span class="va">$CELL</span> <span class="at">-r</span> <span class="va">$READ</span> <span class="at">-s</span> <span class="va">$SEED</span> <span class="at">-o</span> output/seed<span class="va">${SEED}</span>/N<span class="va">${CELL}</span>/R<span class="va">${READ}</span>/BM</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="notes">Notes<a class="anchor" aria-label="anchor" href="#notes"></a>

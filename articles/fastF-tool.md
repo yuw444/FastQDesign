@@ -16,6 +16,18 @@ devtools::install_github("yuw444/FastQDesign")
 
 ## fastF Subcommands
 
+The package includes test data for trying out fastF commands:
+
+``` r
+
+# Paths to package test data
+test_R1 <- system.file("data", "test_R1.fastq.gz", package = "FastQDesign")
+test_R2 <- system.file("data", "test_R2.fastq.gz", package = "FastQDesign")
+test_bam <- system.file("data", "test.bam", package = "FastQDesign")
+test_features <- system.file("data", "features.tsv.gz", package = "FastQDesign")
+test_barcodes <- system.file("data", "barcodes.tsv.gz", package = "FastQDesign")
+```
+
 ### 1. Find Cell Barcode Whitelist
 
 Extract cell barcode whitelist from FastQ files:
@@ -24,7 +36,7 @@ Extract cell barcode whitelist from FastQ files:
 
 # Find whitelist from R1 FastQ file
 FastQDesign::fastF_freq(
-  R1 = "test_R1.fastq.gz",
+  R1 = test_R1,
   out = "output_dir",
   len = 16L
 )
@@ -39,9 +51,9 @@ Filter FastQ files using a whitelist and downsampling:
 ``` r
 
 FastQDesign::fastF_filter(
-  R1 = "test_R1.fastq.gz",
-  R2 = "test_R2.fastq.gz",
-  whitelist = "whitelist.txt",
+  R1 = test_R1,
+  R2 = test_R2,
+  whitelist = system.file("data", "whitelist.txt", package = "FastQDesign"),
   out = "filtered_dir",
   len = 16L,
   seed = 42L,
@@ -56,7 +68,7 @@ Summarize cell barcode and UMI information:
 ``` r
 
 FastQDesign::fastF_crb(
-  bam = "test.bam",
+  bam = test_bam,
   out = "output.tsv.gz"
 )
 ```
@@ -68,9 +80,9 @@ Convert BAM to sparse matrix format:
 ``` r
 
 FastQDesign::fastF_bam2db(
-  bam = "test.bam",
-  feature = "genes.tsv",
-  barcode = "whitelist.txt",
+  bam = test_bam,
+  feature = test_features,
+  barcode = test_barcodes,
   out = "matrix_dir"
 )
 ```
@@ -82,7 +94,7 @@ Extract custom tags from BAM files:
 ``` r
 
 FastQDesign::fastF_extract(
-  bam = "test.bam",
+  bam = test_bam,
   tag = "CB"
 )
 ```

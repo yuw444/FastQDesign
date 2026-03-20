@@ -81,14 +81,22 @@ package:</p>
 <div class="section level2">
 <h2 id="fastf-subcommands">fastF Subcommands<a class="anchor" aria-label="anchor" href="#fastf-subcommands"></a>
 </h2>
+<p>The package includes test data for trying out fastF commands:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Paths to package test data</span></span>
+<span><span class="va">test_R1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R1.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_R2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R2.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_bam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test.bam"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"features.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_barcodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"barcodes.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="find-cell-barcode-whitelist">1. Find Cell Barcode Whitelist<a class="anchor" aria-label="anchor" href="#find-cell-barcode-whitelist"></a>
 </h3>
 <p>Extract cell barcode whitelist from FastQ files:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Find whitelist from R1 FastQ file</span></span>
 <span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_freq.html">fastF_freq</a></span><span class="op">(</span></span>
-<span>  R1 <span class="op">=</span> <span class="st">"test_R1.fastq.gz"</span>,</span>
+<span>  R1 <span class="op">=</span> <span class="va">test_R1</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"output_dir"</span>,</span>
 <span>  len <span class="op">=</span> <span class="fl">16L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -98,11 +106,11 @@ package:</p>
 <h3 id="filter-fastq-files">2. Filter FastQ Files<a class="anchor" aria-label="anchor" href="#filter-fastq-files"></a>
 </h3>
 <p>Filter FastQ files using a whitelist and downsampling:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_filter.html">fastF_filter</a></span><span class="op">(</span></span>
-<span>  R1 <span class="op">=</span> <span class="st">"test_R1.fastq.gz"</span>,</span>
-<span>  R2 <span class="op">=</span> <span class="st">"test_R2.fastq.gz"</span>,</span>
-<span>  whitelist <span class="op">=</span> <span class="st">"whitelist.txt"</span>,</span>
+<span>  R1 <span class="op">=</span> <span class="va">test_R1</span>,</span>
+<span>  R2 <span class="op">=</span> <span class="va">test_R2</span>,</span>
+<span>  whitelist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"whitelist.txt"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"filtered_dir"</span>,</span>
 <span>  len <span class="op">=</span> <span class="fl">16L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">42L</span>,</span>
@@ -113,9 +121,9 @@ package:</p>
 <h3 id="extract-crcb-tags-from-bam">3. Extract CR/CB Tags from BAM<a class="anchor" aria-label="anchor" href="#extract-crcb-tags-from-bam"></a>
 </h3>
 <p>Summarize cell barcode and UMI information:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_crb.html">fastF_crb</a></span><span class="op">(</span></span>
-<span>  bam <span class="op">=</span> <span class="st">"test.bam"</span>,</span>
+<span>  bam <span class="op">=</span> <span class="va">test_bam</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"output.tsv.gz"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -123,11 +131,11 @@ package:</p>
 <h3 id="convert-bam-to-matrix">4. Convert BAM to Matrix<a class="anchor" aria-label="anchor" href="#convert-bam-to-matrix"></a>
 </h3>
 <p>Convert BAM to sparse matrix format:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_bam2db.html">fastF_bam2db</a></span><span class="op">(</span></span>
-<span>  bam <span class="op">=</span> <span class="st">"test.bam"</span>,</span>
-<span>  feature <span class="op">=</span> <span class="st">"genes.tsv"</span>,</span>
-<span>  barcode <span class="op">=</span> <span class="st">"whitelist.txt"</span>,</span>
+<span>  bam <span class="op">=</span> <span class="va">test_bam</span>,</span>
+<span>  feature <span class="op">=</span> <span class="va">test_features</span>,</span>
+<span>  barcode <span class="op">=</span> <span class="va">test_barcodes</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"matrix_dir"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -135,9 +143,9 @@ package:</p>
 <h3 id="extract-custom-tags">5. Extract Custom Tags<a class="anchor" aria-label="anchor" href="#extract-custom-tags"></a>
 </h3>
 <p>Extract custom tags from BAM files:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_extract.html">fastF_extract</a></span><span class="op">(</span></span>
-<span>  bam <span class="op">=</span> <span class="st">"test.bam"</span>,</span>
+<span>  bam <span class="op">=</span> <span class="va">test_bam</span>,</span>
 <span>  tag <span class="op">=</span> <span class="st">"CB"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -146,14 +154,14 @@ package:</p>
 <h2 id="running-from-command-line">Running from Command Line<a class="anchor" aria-label="anchor" href="#running-from-command-line"></a>
 </h2>
 <p>You can also run fastF directly from the command line:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Find whitelist</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">fastF</span> freq <span class="at">-R</span> input_R1.fastq.gz <span class="at">-l</span> 16 <span class="at">-o</span> output_dir/</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Filter FastQ</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="ex">fastF</span> filter <span class="at">-R</span> input_R1.fastq.gz <span class="at">-r</span> input_R2.fastq.gz <span class="at">-w</span> whitelist.txt <span class="at">-o</span> filtered/</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># Extract CR/CB tags</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="ex">fastF</span> crb <span class="at">-b</span> input.bam <span class="at">-o</span> output.tsv.gz</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Find whitelist</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="ex">fastF</span> freq <span class="at">-R</span> input_R1.fastq.gz <span class="at">-l</span> 16 <span class="at">-o</span> output_dir/</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Filter FastQ</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="ex">fastF</span> filter <span class="at">-R</span> input_R1.fastq.gz <span class="at">-r</span> input_R2.fastq.gz <span class="at">-w</span> whitelist.txt <span class="at">-o</span> filtered/</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co"># Extract CR/CB tags</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="ex">fastF</span> crb <span class="at">-b</span> input.bam <span class="at">-o</span> output.tsv.gz</span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
