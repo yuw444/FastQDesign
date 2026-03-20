@@ -130,16 +130,17 @@ if [ -z "$HTSLIB_PATH" ] && pkg-config --exists htslib 2>/dev/null; then
 fi
 
 if [ -n "$HTSLIB_PATH" ]; then
-    # Check for headers in include/htslib (conda) or include (standard)
+    # Determine include path - try dirname/include first (conda layout), 
+    # then dirname/include/htslib (some system layouts)
     HTSLIB_INCLUDE=$(dirname "$HTSLIB_PATH")/include
-    if [ -d "$HTSLIB_INCLUDE/htslib" ]; then
+    if [ ! -f "$HTSLIB_INCLUDE/htslib/sam.h" ] && [ -d "$HTSLIB_INCLUDE/htslib" ]; then
         HTSLIB_INCLUDE="$HTSLIB_INCLUDE/htslib"
     fi
     CFLAGS="$CFLAGS -I$HTSLIB_INCLUDE"
     LDFLAGS="$LDFLAGS -L$HTSLIB_PATH"
     LIBS="$LIBS -lhts"
     HTSLIB_FOUND=true
-    echo "Found htslib: $HTSLIB_PATH"
+    echo "Found htslib: $HTSLIB_PATH (include: $HTSLIB_INCLUDE)"
 fi
 
 if [ "$HTSLIB_FOUND" = false ]; then
