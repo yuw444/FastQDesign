@@ -19,3 +19,8 @@
 
 - [External Data
   Sources](https://yuw444.github.io/FastQDesign/articles/data-sources.md):
+
+### Power Metadata Generation
+
+- [Generating Power Metadata with
+  fastF](https://yuw444.github.io/FastQDesign/articles/generate-power-metadata.md):
