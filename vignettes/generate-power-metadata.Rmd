@@ -28,7 +28,26 @@ The workflow consists of:
 
 ## Data Source
 
-The AI and BM BAM files used in this vignette are available from Zenodo:
+This vignette requires BAM files to generate downsampled UMI matrices. The package includes a small test dataset, but generating power metadata requires the full AI/BM BAM files from Zenodo.
+
+### Package Test Data
+
+For quick testing, the package includes small test files:
+
+```r
+# Test data paths (small files for learning the workflow)
+test_R1 <- system.file("data", "test_R1.fastq.gz", package = "FastQDesign")
+test_R2 <- system.file("data", "test_R2.fastq.gz", package = "FastQDesign")
+test_bam <- system.file("data", "test.bam", package = "FastQDesign")
+test_features <- system.file("data", "features.tsv.gz", package = "FastQDesign")
+test_barcodes <- system.file("data", "barcodes.tsv.gz", package = "FastQDesign")
+```
+
+**Note:** The package `reference_list.rds` contains pre-processed data for the sample-prep vignette, not the full BAM-to-matrix data needed here.
+
+### Full Dataset (Zenodo)
+
+For generating real power metadata, download the full AI/BM BAM files:
 
 **BAM Files:** [https://zenodo.org/records/19073177](https://zenodo.org/records/19073177)
 
@@ -42,7 +61,6 @@ The AI and BM BAM files used in this vignette are available from Zenodo:
 | File | Description | Size |
 |------|-------------|------|
 | `reference_list.rds` | Reference SamplePrep output | 191.2 MB |
-| `bam_downsample_list.rds` | Processed downsampled data | 77.9 MB |
 
 ### Downloading BAM Files
 
@@ -75,28 +93,37 @@ download.file(
   destfile = "P1_BM_possorted_genome_bam.bam"
 )
 download.file(
-  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bai",
+  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai",
   destfile = "P1_BM_possorted_genome_bam.bai"
 )
 ```
 
 ### Generating Feature and Barcode Files
 
-The BAM files contain Cell Ranger-aligned reads with CB (cell barcode) and UB (UMI) tags. After downloading the Seurat objects from Zenodo, you can extract the feature and barcode files:
+The BAM files contain Cell Ranger-aligned reads with CB (cell barcode) and UB (UMI) tags. After downloading, use the Cell Ranger output directory for feature and barcode files:
 
 ```r
-library(Seurat)
+# If you have Cell Ranger output, use the filtered_feature_bc_matrix directory
+REF_AI <- "/path/to/P1_AI/outs/filtered_feature_bc_matrix"
+REF_BM <- "/path/to/P1_BM/outs/filtered_feature_bc_matrix"
+```
 
-# Load reference Seurat object
+Alternatively, extract barcodes from the reference list downloaded from Zenodo:
+
+```r
+# Download reference from Zenodo
+download.file(
+  "https://zenodo.org/records/19072084/files/reference_list.rds",
+  destfile = "reference_list.rds"
+)
 ref_list <- readRDS("reference_list.rds")
 
-# Extract barcodes from reference
-writeLines(colnames(ref_list$Seurat), "ai_barcodes.tsv")
-writeLines(colnames(ref_list$Seurat), "bm_barcodes.tsv")
+# Extract barcodes for AI and BM samples
+ai_cells <- grep("^ai", colnames(ref_list$Seurat), value = TRUE)
+bm_cells <- grep("^bm", colnames(ref_list$Seurat), value = TRUE)
 
-# For features, use Cell Ranger reference (e.g., mm10 or GRCh38)
-# Or extract from the BAM header using samtools:
-# samtools view -H P1_AI_possorted_genome_bam.bam | grep "^@SQ"
+writeLines(ai_cells, "ai_barcodes.tsv")
+writeLines(bm_cells, "bm_barcodes.tsv")
 ```
 
 For more details on data preparation, see the [External Data Sources](../data-sources/index.html) vignette.
