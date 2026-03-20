@@ -28,22 +28,20 @@ The workflow consists of:
 
 ## Data Source
 
-This vignette requires BAM files to generate downsampled UMI matrices. The package includes a small test dataset, but generating power metadata requires the full AI/BM BAM files from Zenodo.
+This vignette requires BAM files to generate downsampled UMI matrices.
 
 ### Package Test Data
 
-For quick testing, the package includes small test files:
+The package includes small test files for learning the workflow:
 
 ```r
-# Test data paths (small files for learning the workflow)
+# Test data paths (small files for testing)
 test_R1 <- system.file("data", "test_R1.fastq.gz", package = "FastQDesign")
 test_R2 <- system.file("data", "test_R2.fastq.gz", package = "FastQDesign")
 test_bam <- system.file("data", "test.bam", package = "FastQDesign")
 test_features <- system.file("data", "features.tsv.gz", package = "FastQDesign")
 test_barcodes <- system.file("data", "barcodes.tsv.gz", package = "FastQDesign")
 ```
-
-**Note:** The package `reference_list.rds` contains pre-processed data for the sample-prep vignette, not the full BAM-to-matrix data needed here.
 
 ### Full Dataset (Zenodo)
 
@@ -56,7 +54,7 @@ For generating real power metadata, download the full AI/BM BAM files:
 | AI | `P1_AI_possorted_genome_bam.bam` | 13.1 GB |
 | BM | `P1_BM_possorted_genome_bam.bam` | 14.4 GB |
 
-**Pre-processed Seurat Objects:** [https://zenodo.org/records/19072084](https://zenodo.org/records/19072084)
+**Reference Data:** [https://zenodo.org/records/19072084](https://zenodo.org/records/19072084)
 
 | File | Description | Size |
 |------|-------------|------|
@@ -100,18 +98,14 @@ download.file(
 
 ### Generating Feature and Barcode Files
 
-The BAM files contain Cell Ranger-aligned reads with CB (cell barcode) and UB (UMI) tags. After downloading, use the Cell Ranger output directory for feature and barcode files:
+The BAM files contain Cell Ranger-aligned reads with CB (cell barcode) and UB (UMI) tags. Use the Cell Ranger output directory for feature and barcode files:
 
 ```r
-# If you have Cell Ranger output, use the filtered_feature_bc_matrix directory
+# Use the filtered_feature_bc_matrix directory from Cell Ranger output
 REF_AI <- "/path/to/P1_AI/outs/filtered_feature_bc_matrix"
 REF_BM <- "/path/to/P1_BM/outs/filtered_feature_bc_matrix"
-```
 
-Alternatively, extract barcodes from the reference list downloaded from Zenodo:
-
-```r
-# Download reference from Zenodo
+# Extract barcodes from reference list downloaded from Zenodo
 download.file(
   "https://zenodo.org/records/19072084/files/reference_list.rds",
   destfile = "reference_list.rds"

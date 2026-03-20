@@ -9,7 +9,6 @@
 data/AI/
 data/BM/
 *.pdf
-*.csv
 *.log
 build/
 AGENTS.md

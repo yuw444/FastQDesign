@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-Test data for FastQDesign is hosted on Zenodo for reproducibility and easy access.
+Data files for FastQDesign are hosted on Zenodo for reproducibility and easy access. Note: Some large data files (like BAM files and RDS objects) are not included in the R package due to size limits.
 
 ## Download Links
 
@@ -31,16 +31,17 @@ Contains Cellranger-aligned BAM files with cell barcodes (CB tag) and UMI (UB ta
 | `P1_BM_possorted_genome_bam.bam` | 14.4 GB |
 | `P1_BM_possorted_genome_bam.bam.bai` | 4.4 MB |
 
-### Seurat Objects (processed data)
+### Reference Data and Power Analysis
 
 Download from: [https://zenodo.org/records/19072084](https://zenodo.org/records/19072084)
 
-Contains pre-processed Seurat objects:
+Contains pre-processed Seurat objects and power analysis data:
 
-| File | Size |
-|------|------|
-| `bam_downsample_list.rds` | 77.9 MB |
-| `reference_list.rds` | 191.2 MB |
+| File | Description | Size |
+|------|-------------|------|
+| `reference_list.rds` | Reference SamplePrep output | 191.2 MB |
+| `bam_downsample_list.rds` | Processed downsampled data | 77.9 MB |
+| `AIBM_power.csv` | Power analysis data for experiment design | ~6 KB |
 
 ## URL Streaming (No Download Required)
 
