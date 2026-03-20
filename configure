@@ -86,8 +86,6 @@ if [ -z "$HTSLIB_PATH" ]; then
         fi
     done
 fi
-    done
-fi
 
 # Try pkg-config as last resort
 if [ -z "$HTSLIB_PATH" ] && pkg-config --exists htslib 2>/dev/null; then
