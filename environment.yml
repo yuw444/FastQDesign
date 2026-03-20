@@ -11,6 +11,7 @@ dependencies:
   - r-harmony=1.2.4
   - r-future
   - r-dplyr
+  - r-fpc
   - bioconductor-genomeinfodb
   - bioconductor-glmgampoi
   - bioconductor-iranges
