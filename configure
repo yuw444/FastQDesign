@@ -66,6 +66,36 @@ if [ -z "$HTSLIB_PATH" ] && [ -f "/usr/local/lib/libhts.so" ]; then
     HTSLIB_PATH="/usr/local/lib"
 fi
 
+# Check micromamba/conda environment paths
+if [ -z "$HTSLIB_PATH" ]; then
+    # Check MAMBA_ROOT_PREFIX (micromamba) or CONDA_PREFIX
+    for env_root in "$MAMBA_ROOT_PREFIX" "$CONDA_PREFIX" "$MAMBA_PREFIX"; do
+        if [ -n "$env_root" ] && [ -d "$env_root" ]; then
+            if [ -f "$env_root/lib/libhts.so" ] || [ -f "$env_root/lib/libhts.a" ]; then
+                HTSLIB_PATH="$env_root/lib"
+                break
+            fi
+            if [ -f "$env_root/lib64/libhts.so" ] || [ -f "$env_root/lib64/libhts.a" ]; then
+                HTSLIB_PATH="$env_root/lib64"
+                break
+            fi
+        fi
+        # Also check common micromamba locations
+        if [ -d "/home/runner/micromamba/envs" ]; then
+            for env_dir in /home/runner/micromamba/envs/*/; do
+                if [ -f "${env_dir}lib/libhts.so" ] || [ -f "${env_dir}lib/libhts.a" ]; then
+                    HTSLIB_PATH="${env_dir}lib"
+                    break 2
+                fi
+                if [ -f "${env_dir}lib64/libhts.so" ] || [ -f "${env_dir}lib64/libhts.a" ]; then
+                    HTSLIB_PATH="${env_dir}lib64"
+                    break 2
+                fi
+            done
+        fi
+    done
+fi
+
 # Check common paths (including CI environments)
 if [ -z "$HTSLIB_PATH" ]; then
     for path in \
@@ -100,7 +130,11 @@ if [ -z "$HTSLIB_PATH" ] && pkg-config --exists htslib 2>/dev/null; then
 fi
 
 if [ -n "$HTSLIB_PATH" ]; then
+    # Check for headers in include/htslib (conda) or include (standard)
     HTSLIB_INCLUDE=$(dirname "$HTSLIB_PATH")/include
+    if [ -d "$HTSLIB_INCLUDE/htslib" ]; then
+        HTSLIB_INCLUDE="$HTSLIB_INCLUDE/htslib"
+    fi
     CFLAGS="$CFLAGS -I$HTSLIB_INCLUDE"
     LDFLAGS="$LDFLAGS -L$HTSLIB_PATH"
     LIBS="$LIBS -lhts"
