@@ -76,7 +76,7 @@ download.file(
   destfile = "P1_BM_possorted_genome_bam.bam"
 )
 download.file(
-  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai",
+  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bai",
   destfile = "P1_BM_possorted_genome_bam.bai"
 )
 ```
