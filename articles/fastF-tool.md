@@ -14,19 +14,24 @@ package:
 devtools::install_github("yuw444/FastQDesign")
 ```
 
-## fastF Subcommands
+## Package Test Data
 
-The package includes test data for trying out fastF commands:
+The package includes small test files for learning the fastF workflow:
 
 ``` r
 
-# Paths to package test data
+# Paths to package test data (small files)
 test_R1 <- system.file("data", "test_R1.fastq.gz", package = "FastQDesign")
 test_R2 <- system.file("data", "test_R2.fastq.gz", package = "FastQDesign")
 test_bam <- system.file("data", "test.bam", package = "FastQDesign")
 test_features <- system.file("data", "features.tsv.gz", package = "FastQDesign")
 test_barcodes <- system.file("data", "barcodes.tsv.gz", package = "FastQDesign")
+test_whitelist <- system.file("data", "whitelist.txt", package = "FastQDesign")
 ```
+
+## fastF Subcommands
+
+### 1. Find Cell Barcode Whitelist
 
 ### 1. Find Cell Barcode Whitelist
 
@@ -53,7 +58,7 @@ Filter FastQ files using a whitelist and downsampling:
 FastQDesign::fastF_filter(
   R1 = test_R1,
   R2 = test_R2,
-  whitelist = system.file("data", "whitelist.txt", package = "FastQDesign"),
+  whitelist = test_whitelist,
   out = "filtered_dir",
   len = 16L,
   seed = 42L,

@@ -3,14 +3,29 @@
 This vignette demonstrates sample preparation, downsampling, and
 pseudotime analysis functions.
 
+## Data Source
+
+Reference data for sample preparation is hosted on Zenodo:
+
+**Download from:** <https://zenodo.org/records/19072084>
+
+``` r
+
+# Download reference data
+download.file(
+  "https://zenodo.org/records/19072084/files/reference_list.rds",
+  destfile = "reference_list.rds"
+)
+```
+
 ## SamplePrep
 
 Prepare reference data for experiment design:
 
 ``` r
 
-# Load reference data
-ref_list <- readRDS(system.file("data", "reference_list.rds", package = "FastQDesign"))
+# Load reference data (after downloading from Zenodo)
+ref_list <- readRDS("reference_list.rds")
 
 # Prepare sample (Seurat object)
 cb03_list <- SamplePrep(

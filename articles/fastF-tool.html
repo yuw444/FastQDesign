@@ -79,18 +79,28 @@ package:</p>
 <code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"yuw444/FastQDesign"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="fastf-subcommands">fastF Subcommands<a class="anchor" aria-label="anchor" href="#fastf-subcommands"></a>
+<h2 id="package-test-data">Package Test Data<a class="anchor" aria-label="anchor" href="#package-test-data"></a>
 </h2>
-<p>The package includes test data for trying out fastF commands:</p>
+<p>The package includes small test files for learning the fastF
+workflow:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Paths to package test data</span></span>
+<code class="sourceCode R"><span><span class="co"># Paths to package test data (small files)</span></span>
 <span><span class="va">test_R1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R1.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
 <span><span class="va">test_R2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test_R2.fastq.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
 <span><span class="va">test_bam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"test.bam"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
 <span><span class="va">test_features</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"features.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
-<span><span class="va">test_barcodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"barcodes.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">test_barcodes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"barcodes.tsv.gz"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span>
+<span><span class="va">test_whitelist</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"whitelist.txt"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="fastf-subcommands">fastF Subcommands<a class="anchor" aria-label="anchor" href="#fastf-subcommands"></a>
+</h2>
 <div class="section level3">
 <h3 id="find-cell-barcode-whitelist">1. Find Cell Barcode Whitelist<a class="anchor" aria-label="anchor" href="#find-cell-barcode-whitelist"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="find-cell-barcode-whitelist-1">1. Find Cell Barcode Whitelist<a class="anchor" aria-label="anchor" href="#find-cell-barcode-whitelist-1"></a>
 </h3>
 <p>Extract cell barcode whitelist from FastQ files:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -110,7 +120,7 @@ package:</p>
 <code class="sourceCode R"><span><span class="fu">FastQDesign</span><span class="fu">::</span><span class="fu"><a href="../reference/fastF_filter.html">fastF_filter</a></span><span class="op">(</span></span>
 <span>  R1 <span class="op">=</span> <span class="va">test_R1</span>,</span>
 <span>  R2 <span class="op">=</span> <span class="va">test_R2</span>,</span>
-<span>  whitelist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"whitelist.txt"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span>,</span>
+<span>  whitelist <span class="op">=</span> <span class="va">test_whitelist</span>,</span>
 <span>  out <span class="op">=</span> <span class="st">"filtered_dir"</span>,</span>
 <span>  len <span class="op">=</span> <span class="fl">16L</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">42L</span>,</span>

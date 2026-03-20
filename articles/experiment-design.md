@@ -3,13 +3,23 @@
 FastQDesign helps investigators plan scRNA-seq experiments by optimizing
 the number of cells and sequencing depth given a budget constraint.
 
+## Data Source
+
+Power analysis data (`df_power`) is included with the package:
+
+``` r
+
+# Load power analysis data from package
+df_power <- read.csv(system.file("data", "AIBM_power.csv", package = "FastQDesign"))
+```
+
 ## Basic Usage
 
 ``` r
 
 library(FastQDesign)
 
-# Load power analysis data from literature
+# Load power analysis data
 df_power <- read.csv(system.file("data", "AIBM_power.csv", package = "FastQDesign"))
 
 # Define experiment parameters

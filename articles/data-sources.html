@@ -67,8 +67,9 @@
 
     
     
-<p>Test data for FastQDesign is hosted on Zenodo for reproducibility and
-easy access.</p>
+<p>Data files for FastQDesign are hosted on Zenodo for reproducibility
+and easy access. Note: Some large data files (like BAM files and RDS
+objects) are not included in the R package due to size limits.</p>
 <div class="section level2">
 <h2 id="download-links">Download Links<a class="anchor" aria-label="anchor" href="#download-links"></a>
 </h2>
@@ -104,23 +105,31 @@ UMI (UB tag):</p>
 </table>
 </div>
 <div class="section level3">
-<h3 id="seurat-objects-processed-data">Seurat Objects (processed data)<a class="anchor" aria-label="anchor" href="#seurat-objects-processed-data"></a>
+<h3 id="reference-data-and-power-analysis">Reference Data and Power Analysis<a class="anchor" aria-label="anchor" href="#reference-data-and-power-analysis"></a>
 </h3>
 <p>Download from: <a href="https://zenodo.org/records/19072084" class="external-link">https://zenodo.org/records/19072084</a></p>
-<p>Contains pre-processed Seurat objects:</p>
+<p>Contains pre-processed Seurat objects and power analysis data:</p>
 <table class="table">
 <thead><tr class="header">
 <th>File</th>
+<th>Description</th>
 <th>Size</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>bam_downsample_list.rds</code></td>
-<td>77.9 MB</td>
+<td><code>reference_list.rds</code></td>
+<td>Reference SamplePrep output</td>
+<td>191.2 MB</td>
 </tr>
 <tr class="even">
-<td><code>reference_list.rds</code></td>
-<td>191.2 MB</td>
+<td><code>bam_downsample_list.rds</code></td>
+<td>Processed downsampled data</td>
+<td>77.9 MB</td>
+</tr>
+<tr class="odd">
+<td><code>AIBM_power.csv</code></td>
+<td>Power analysis data for experiment design</td>
+<td>~6 KB</td>
 </tr>
 </tbody>
 </table>
