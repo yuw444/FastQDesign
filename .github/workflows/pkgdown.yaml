@@ -28,6 +28,11 @@ jobs:
           shell-startup: false
           isolate: false
 
+      - name: Install package
+        run: |
+          micromamba run -n fastqdesign R CMD INSTALL .
+        shell: bash
+
       - name: Build pkgdown site
         run: |
           micromamba run -n fastqdesign Rscript -e 'pkgdown::build_site()'
