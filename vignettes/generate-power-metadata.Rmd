@@ -8,14 +8,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = FALSE
-)
-```
-
 This vignette demonstrates how to generate `df_power` metadata for experiment design using the `FastQDesign-fastF` tool and FastQDesign framework. The `df_power` data frame contains power/similarity metrics across a grid of cell proportions and read depths.
 
 ## Overview
@@ -83,7 +75,7 @@ download.file(
   destfile = "P1_BM_possorted_genome_bam.bam"
 )
 download.file(
-  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bam.bai",
+  "https://zenodo.org/records/19073177/files/P1_BM_possorted_genome_bam.bai",
   destfile = "P1_BM_possorted_genome_bam.bai"
 )
 ```
@@ -111,7 +103,7 @@ For more details on data preparation, see the [External Data Sources](../data-so
 
 ## Step 1: Define Configuration
 
-```{r config}
+```{r config, eval=FALSE}
 library(FastQDesign)
 library(Seurat)
 library(dplyr)
@@ -152,7 +144,7 @@ REF_BM <- "./P1_BM_filtered_feature_bc_matrix"
 
 Load and prepare the reference UMI matrices:
 
-```{r prepare_reference}
+```{r prepare_reference, eval=FALSE}
 # Load reference UMI matrices
 AI_data <- Read10X(REF_AI)
 BM_data <- Read10X(REF_BM)
@@ -185,7 +177,7 @@ ref_list <- SamplePrep(
 
 Loop through the grid and generate downsampled UMI matrices:
 
-```{r generate_downsamples}
+```{r generate_downsamples, eval=FALSE}
 # Create output directories
 dir.create(file.path(OUT_DIR, "fastF"), recursive = TRUE, showWarnings = FALSE)
 
@@ -244,7 +236,7 @@ for (seed in seeds) {
 
 Load each downsampled matrix, compare with reference, and compute similarity metrics:
 
-```{r compare_results}
+```{r compare_results, eval=FALSE}
 # Function to compute similarity metrics
 compute_similarity <- function(input_path, ref_list) {
   
@@ -346,7 +338,7 @@ df_results <- bind_rows(results)
 
 Average across replicates and convert to the format expected by `FastQDesign()`:
 
-```{r aggregate_results}
+```{r aggregate_results, eval=FALSE}
 # Aggregate: mean power across replicates per grid point
 df_power_agg <- df_results %>%
   group_by(cell_rate, read_rate) %>%
@@ -384,7 +376,7 @@ head(df_power)
 
 Once you have the `df_power` data frame, you can use it with `FastQDesign()`:
 
-```{r experiment_design}
+```{r experiment_design, eval=FALSE}
 # Define experiment parameters
 budget <- 7500
 power_threshold <- 0.7

@@ -6,6 +6,33 @@ template:
   bslib:
     primary_color: "#1f77b4"
 
+navbar:
+  title: "FastQDesign"
+  type: inverse
+  left:
+    - icon: fa-home
+      href: index.html
+    - text: "Getting Started"
+      href: articles/experiment-design.html
+    - text: "Articles"
+      menu:
+        - text: "Getting Started"
+          href: articles/experiment-design.html
+        - text: "---"
+        - text: "fastF Tool"
+          href: articles/fastF-tool.html
+        - text: "Sample Analysis"
+          href: articles/sample-prep.html
+        - text: "Data Sources"
+          href: articles/data-sources.html
+        - text: "Power Metadata Generation"
+          href: articles/generate-power-metadata.html
+    - text: "Reference"
+      href: reference/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/yuw444/FastQDesign
+
 home:
   title: FastQDesign
   description: >
