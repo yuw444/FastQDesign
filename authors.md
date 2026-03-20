@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/yuw444/FastQDesign/blob/HEAD/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/yuw444/FastQDesign/blob/main/DESCRIPTION)
 
 Wang Y (2026). *FastQDesign: scRNA-seq Experiment Design Tool*. R
 package version 0.1.0, https://yuw444.github.io/FastQDesign/,
