@@ -58,6 +58,9 @@ articles:
   - title: Data
     contents:
       - data-sources
+  - title: Power Metadata Generation
+    contents:
+      - generate-power-metadata
 
 development:
   mode: auto
