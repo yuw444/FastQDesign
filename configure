@@ -112,7 +112,7 @@ fi
 
 if [ "$HTSLIB_FOUND" = false ]; then
     echo "ERROR: htslib not found. Please install it."
-    echo "Try: apt install libhts-dev or conda install htslib"
+    echo "Try: sudo apt-get install libhts-dev libbz2-dev zlib1g-dev libssl-dev libsqlite3-dev"
     exit 1
 fi
 
