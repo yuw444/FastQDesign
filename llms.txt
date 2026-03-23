@@ -10,11 +10,53 @@ open-access, PMID:
 
 ## Installation
 
+### Install R Package
+
 You can install the development version of FastQDesign from
 [GitHub](https://github.com/) with:
 
-    # install.packages("devtools")
-    devtools::install_github("yuw444/FastQDesign")
+``` r
+
+# install.packages("devtools")
+devtools::install_github("yuw444/FastQDesign")
+```
+
+### Install fastF Tool (Optional)
+
+The `fastF` C tool is automatically installed with the R package. For
+manual installation or building from source:
+
+``` bash
+# Clone the repository
+git clone https://github.com/yuw444/FastQDesign.git
+cd FastQDesign
+
+# Build fastF (requires htslib, zlib, libbz2, openssl, sqlite3)
+mkdir build && cd build
+cmake ..
+make
+
+# Add to PATH
+export PATH=$PATH:/path/to/FastQDesign/build/fastF
+```
+
+### System Dependencies
+
+- **R** (\>= 3.5.0)
+- **htslib** (\>= 1.10)
+- **zlib**, **libbz2**, **openssl**, **sqlite3**
+
+On Ubuntu/Debian:
+
+``` bash
+sudo apt-get install libhts-dev libbz2-dev libssl-dev libsodium-dev libsqlite3-dev
+```
+
+On macOS:
+
+``` bash
+brew install htslib bzip2 openssl sqlite
+```
 
 ## fastF
 

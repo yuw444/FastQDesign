@@ -65,9 +65,47 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<div class="section level3">
+<h3 id="install-r-package">Install R Package<a class="anchor" aria-label="anchor" href="#install-r-package"></a>
+</h3>
 <p>You can install the development version of FastQDesign from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<pre><code><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"yuw444/FastQDesign"</span><span class="op">)</span></span></code></pre>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"yuw444/FastQDesign"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="install-fastf-tool-optional">Install fastF Tool (Optional)<a class="anchor" aria-label="anchor" href="#install-fastf-tool-optional"></a>
+</h3>
+<p>The <code>fastF</code> C tool is automatically installed with the R package. For manual installation or building from source:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Clone the repository</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/yuw444/FastQDesign.git</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="bu">cd</span> FastQDesign</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co"># Build fastF (requires htslib, zlib, libbz2, openssl, sqlite3)</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">mkdir</span> build <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> build</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">cmake</span> ..</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">make</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co"># Add to PATH</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="va">$PATH</span>:/path/to/FastQDesign/build/fastF</span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="system-dependencies">System Dependencies<a class="anchor" aria-label="anchor" href="#system-dependencies"></a>
+</h3>
+<ul>
+<li>
+<strong>R</strong> (&gt;= 3.5.0)</li>
+<li>
+<strong>htslib</strong> (&gt;= 1.10)</li>
+<li>
+<strong>zlib</strong>, <strong>libbz2</strong>, <strong>openssl</strong>, <strong>sqlite3</strong>
+</li>
+</ul>
+<p>On Ubuntu/Debian:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sudo</span> apt-get install libhts-dev libbz2-dev libssl-dev libsodium-dev libsqlite3-dev</span></code></pre></div>
+<p>On macOS:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">brew</span> install htslib bzip2 openssl sqlite</span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="fastf">fastF<a class="anchor" aria-label="anchor" href="#fastf"></a>
