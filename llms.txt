@@ -31,7 +31,12 @@ and reference for the comparison:
     library(FastQDesign)
     library(Seurat)
 
-    aibm <- readRDS("~/Documents/Research/FastQDesign/reference_list.rds")[[1]]
+    # Load reference data from Zenodo (https://zenodo.org/records/19072084)
+    download.file(
+      "https://zenodo.org/records/19072084/files/reference_list.rds",
+      destfile = "reference_list.rds"
+    )
+    aibm <- readRDS("reference_list.rds")[[1]]
 
     ref_list <- SamplePrep(
       aibm,
@@ -44,7 +49,12 @@ and reference for the comparison:
       verbose = TRUE
     )
 
-    fastq_ds <- readRDS("~/Documents/Research/FastQDesign/bam_downsample_list.rds")[[1]]
+    # Download downsampled data from Zenodo
+    download.file(
+      "https://zenodo.org/records/19072084/files/bam_downsample_list.rds",
+      destfile = "bam_downsample_list.rds"
+    )
+    fastq_ds <- readRDS("bam_downsample_list.rds")[[1]]
 
     ds_list <- SamplePrep(
       fastq_ds,
@@ -79,7 +89,8 @@ is generated with the FastQ downsample by
 
 ## Design
 
-    df_power_paper <- read.csv("~/Documents/Research/FastQDesign/AIBM_power.csv")
+    # Load power analysis data from package
+    df_power_paper <- read.csv(system.file("data", "AIBM_power.csv", package = "FastQDesign"))
 
     budget <- 7500
     power_threshold <- 0.8

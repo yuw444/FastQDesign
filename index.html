@@ -81,7 +81,12 @@
 <pre><code><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/FastQDesign" class="external-link">FastQDesign</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://satijalab.org/seurat" class="external-link">Seurat</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">aibm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"~/Documents/Research/FastQDesign/reference_list.rds"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co"># Load reference data from Zenodo (https://zenodo.org/records/19072084)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://zenodo.org/records/19072084/files/reference_list.rds"</span>,</span>
+<span>  destfile <span class="op">=</span> <span class="st">"reference_list.rds"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">aibm</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"reference_list.rds"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">ref_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/SamplePrep.html">SamplePrep</a></span><span class="op">(</span></span>
 <span>  <span class="va">aibm</span>,</span>
@@ -94,7 +99,12 @@
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">fastq_ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"~/Documents/Research/FastQDesign/bam_downsample_list.rds"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co"># Download downsampled data from Zenodo</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html" class="external-link">download.file</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://zenodo.org/records/19072084/files/bam_downsample_list.rds"</span>,</span>
+<span>  destfile <span class="op">=</span> <span class="st">"bam_downsample_list.rds"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">fastq_ds</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">"bam_downsample_list.rds"</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">ds_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/SamplePrep.html">SamplePrep</a></span><span class="op">(</span></span>
 <span>  <span class="va">fastq_ds</span>,</span>
@@ -128,7 +138,8 @@
 <div class="section level2">
 <h2 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a>
 </h2>
-<pre><code><span><span class="va">df_power_paper</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="st">"~/Documents/Research/FastQDesign/AIBM_power.csv"</span><span class="op">)</span></span>
+<pre><code><span><span class="co"># Load power analysis data from package</span></span>
+<span><span class="va">df_power_paper</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"data"</span>, <span class="st">"AIBM_power.csv"</span>, package <span class="op">=</span> <span class="st">"FastQDesign"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">budget</span> <span class="op">&lt;-</span> <span class="fl">7500</span></span>
 <span><span class="va">power_threshold</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
